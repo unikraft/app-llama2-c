@@ -1,15 +1,8 @@
 UK_ROOT ?= $(PWD)/UNIK/unikraft
 UK_LIBS ?= $(PWD)/UNIK/libs
 LIBS := $(UK_LIBS)/musl
-# Model / Tokenizer Paths
-MOD_PATH    = out/model.bin
-TOK_PATH    = tokenizer.bin
 
 all:
-	UK_DEFCONFIG=$(shell pwd)/defconfigs/qemu-x86_64 make -f Makefile.unikernel defconfig
-	gcc -Ofast strliteral.c -o strlit
-	./strlit -i emb_Model_data $(MOD_PATH) model.h
-	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
 	@$(MAKE) -C $(UK_ROOT) A=$(PWD) L=$(LIBS)
 
 $(MAKECMDGOALS):
