@@ -48,7 +48,7 @@ jobs:
       - name: Build runfast
         id: make_build_runfast
         run: |
-          make runfast
+          make run_cc_fast
 
       - name: Test with pytest
         run: |
@@ -91,7 +91,7 @@ jobs:
       - name: Build runfast
         id: make_build_runfast
         run: |
-          make runfast
+          make run_cc_fast
 
       - name: Test with pytest
         run: pytest
