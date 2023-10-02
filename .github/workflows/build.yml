@@ -173,7 +173,7 @@ jobs:
       - name: Build ${{ matrix.sys }} ${{ matrix.env }}
         id: build_mingw
         run: |
-          make win64
+          make run_win
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v3
