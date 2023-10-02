@@ -38,17 +38,15 @@ It's a chicken and egg problem. This has to be explored and figured out on the w
 
 Have you ever wanted to really boot and inference a baby Llama 2 model on a computer? No? Well, now you can!
 
-![guru](https://github.com/trholding/llama2.c/assets/93451215/5f9fa0e7-5f30-437f-bbe1-a2aeccdcdfc5)
+![temple dos](https://github.com/trholding/llama2.c/assets/93451215/5142b54e-b46f-4224-99a6-44b8896d2358)
 
-#### Probably Releasing today!
-
-### NEW - Linux Kernel Module
+![GUI](https://github.com/trholding/llama2.c/assets/93451215/ce139c79-407d-4946-8244-0f38a3c07211)
 
 Have you ever wanted to do `cat /dev/llama` and `echo "Sudo make me a sandwich!" > /dev/llama` or pass a kernel parameter such as `l2e.quest="What is the meaning of life?"` ? No? Well, as luck would have, it now you can!
 
-![bootos1](https://github.com/trholding/llama2.c/assets/93451215/bb4f3377-e657-41af-86ce-fe10bc164339)
+![dmesg](https://github.com/trholding/llama2.c/assets/93451215/93b7e87b-170e-4a25-8b61-2a9cef461714)
 
-#### Probably Releasing today! (WIP)
+Download and run the ISO from the latest release!
 
 ### NEW - Unikernel Build
 
@@ -490,11 +488,26 @@ Special Builds
 ---> Android
   run_incbin_tmux               - Optimized build + Embedded Model for Termux on Android
 
----> Unikernel
-  run_unik_qemu                 - L2E Unikernel for kvm / qemu x86_64
+---> L2E Unikernel (Asteroid)
+  l2e_unik_qemu                 - L2E Unikernel (Asteroid) for kvm / qemu x86_64
+
+---> L2E Unikernel (Asteroid) ---> Boot in qemu
+  boot_l2e_unik                 - Boot L2E Unikernel (Asteroid) in qemu
 
 ---> L2E OS (Humanoid)
   l2e_os                        - L2E OS, kernel module and userspace build
+
+---> L2E OS (Humanoid) ---> Make Bootable ISO
+  l2e_os_iso                    - Make Bootable L2E OS Hybrid UEFI/BIOS ISO Image
+
+---> L2E OS (Humanoid) ---> Boot in qemu
+  boot_l2e_os                   - Boot L2E OS (Humanoid) in qemu
+
+---> L2E OS (Humanoid) ---> Boot ISO in qemu
+  boot_l2e_iso                  - Boot L2E OS ISO Image in qemu
+
+---> L2E OS (Humanoid) ---> Boot ISO with UEFI in qemu
+  boot_l2e_iso_uefi             - Boot L2E OS ISO Image with UEFI in qemu
 
 Debug Build
   run_debug                     - Debug build which can be analyzed with tools like valgrind.
@@ -505,14 +518,18 @@ Testing
   testcc                        - run the C tests, without touching pytest / python
 
 Clean/ Purge
+  tempclean                     - Find and delete all temporary files left by editors  
   clean                         - Simple cleaning 
-  distclean                     - Revert to mint condition. Warning: Deletes cloned subprojects.
+  distclean                     - Deep cleaning (distclean sub projects)
+  mintclean                     - Revert to mint condition (remove sub projects)
 
 Misc
+  get_model                     - Get stories15M model
   list                          - Display sorted list of all targets
 
 Help
   help                          - Display this help. Make without target also displays this help.
+
 ```
 
 All builds with embedded models need the model to be in ``out/`` directory and the model name has to be ``model.bin``
