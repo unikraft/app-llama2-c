@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# L2E OS Driver
+#
+
+config L2E_OS_DRIVER
+	tristate "L2E OS Driver: LLAMA2 Binary Loader"
+	select USERMODE_DRIVER
+	default y

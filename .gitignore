@@ -12,3 +12,17 @@ model.h
 UNIK/
 build/
 stories15M.bin
+l2e_boot/linux/
+l2e_boot/musl/
+l2e_boot/musl_build/
+l2e_boot/toybox/
+l2e_boot/kernel_headers/
+l2e_boot/busybox/
+l2e_boot/ISO/
+l2e_boot/l2eos.iso
+l2e_boot/limine/
+l2e_boot/fbDOOM/
+l2e_boot/l2e_sources/l2eterm/lvgl/
+l2e_boot/l2e_sources/l2eterm/lv_drivers/
+assets/l2ebg.svg
+assets/LAIRS.svg

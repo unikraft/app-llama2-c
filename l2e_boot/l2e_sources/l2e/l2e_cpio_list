@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Minimal initramfs for L2E OS
+
+dir /dev 0755 0 0
+nod /dev/console 0600 0 0 c 5 1
+nod /dev/fb0 0660 0 0 c 29 0
+nod /dev/null 0666 0 0 c 1 3
+nod /dev/zero 0660 0 0 c 1 5
+nod /dev/random 0660 0 0 c 1 8
+nod /dev/tty0 660 0 0 c 4 0
+nod /dev/tty1 660 0 0 c 4 1
+nod /dev/tty2 660 0 0 c 4 2
+nod /dev/tty3 660 0 0 c 4 3
+nod /dev/tty4 660 0 0 c 4 4
+nod /dev/tty5 660 0 0 c 4 5
+nod /dev/tty6 660 0 0 c 4 6
+nod /dev/tty7 660 0 0 c 4 7
+dir /dev/input 0755 0 0
+dir /dev/pts 0755 0 0
+nod /dev/input/event0 0660 0 0 c 13 64
+nod /dev/input/event1 0660 0 0 c 13 65
+nod /dev/input/event2 0660 0 0 c 13 66
+nod /dev/input/event3 0660 0 0 c 13 67
+dir /proc 0755 0 0
+dir /sys  0755 0 0
+dir /tmp  0755 0 0
+dir /bin  0755 0 0
+dir /root 0755 0 0
+dir /.fsociety 0755 0 0
+file /l2e l2e/l2e_bin 755 0 0
+file /init l2e/init 755 0 0
+file /bin/toybox l2e/toybox 755 0 0
+file /bin/busybox l2e/busybox 755 0 0
+file /l2eterm l2e/l2eterm 755 0 0
+file /tmp/LAIRS.png l2e/LAIRS.png 755 0 0
+file /.fsociety/astsu l2e/fbdoom 755 0 0
+file /.fsociety/fsociety00.dat l2e/freedm.wad 755 0 0
+file /.fsociety/fsociety01.dat l2e/freedoom1.wad 755 0 0
+file /.fsociety/fsociety02.dat l2e/freedoom2.wad 755 0 0
+file /.fsociety/readme.txt l2e/readme.txt 755 0 0
+file /.fsociety/shellcode.sh l2e/shellcode.sh 755 0 0

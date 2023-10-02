@@ -432,41 +432,89 @@ Example:
 make run_cc_openmp
 ```
 
-Targets:
-
-NEW:
+Usage & Targets:
 
 ```
-run_unik_qemu_x86_64 - Unikernel + embedded model Build (QEMU/x86_64)
+Usage:
+  make <target>
+
+Simple Builds
+  run_cc                        - Standard build with basic optimizations
+  run_cc_fast                   - More Optimized build. Disregards strict standards compliance
+  run_cc_gnu                    - Optimized Generic linux distro build
+
+Accelerated Builds
+  run_cc_openmp                 - OpenMP accelerated build
+  run_cc_openacc                - OpenACC accelerated build
+  run_cc_omp_gnu                - Generic linux distro + OpenMP build
+  run_cc_clblast                - CLBlast OpenCL CBLAS GPU accelerated build
+  run_cc_openblas               - Openblas CBLAS accelerated build
+  run_cc_cblas                  - Generic CBLAS accelerated build
+  run_cc_blis                   - BLIS accelerated build
+
+Special Builds 
+
+---> x86_64
+  run_cc_mkl                    - OpenMP + Intel MKL CBLAS build (x86_64 / intel Mac) (WIP)
+
+---> ARM64 / aarch64
+  run_cc_armpl                  - ARM PL BLAS accelerated build (ARM64 & Mac)  (WIP)
+
+---> Macintosh
+  run_cc_mac_accel              - Mac OS OPENMP + CBLAS via Accelerate Framework build (WIP/TEST)
+
+---> Windows
+  run_win                       - Optimized Windows build with MinGW-w64 toolchain
+  run_win_msvc                  - OpenMP accelerated Windows build with MSVC toolchain (Untested)
+
+---> MultiOS Builds (using cosmopolitan libc + toolchain)
+  run_cosmocc                   - Optimized Portable + cosmocc (runs on all OSes)
+
+---> MultiOS Builds ---> with Embedded Models
+  run_cosmocc_zipos             - Optimized Portable + cosmocc + embedded zip model build (runs on all OSes)
+  run_cosmocc_incbin            - Optimized Portable + cosmocc + embedded model fast build (runs on all OSes)
+  run_cosmocc_strlit            - Optimized Portable + cosmocc + embedded model build (runs on all OSes)
+
+---> GCC/Clang Embedded Model Builds
+  run_gcc_openmp_incbin         - Gcc + OpenMP + embedded model fast build
+  run_gcc_openmp_strlit         - Gcc + OpenMP + embedded model build
+  run_clang_openmp_incbin       - Clang + OpenMP + embedded model fast build
+  run_clang_openmp_strlit       - Clang + OpenMP + embedded model build
+
+---> GCC/Clang Embedded Model Builds ---> Statically Linked
+  run_gcc_static_incbin         - Optimized Static gcc + embedded model fast build
+  run_gcc_static_strlit         - Optimized Static gcc + embedded model build
+  run_clang_static_incbin       - Optimized Static clang + embedded model fast build
+  run_clang_static_strlit       - Optimized Static clang + embedded model build
+
+---> Android
+  run_incbin_tmux               - Optimized build + Embedded Model for Termux on Android
+
+---> Unikernel
+  run_unik_qemu                 - L2E Unikernel for kvm / qemu x86_64
+
+---> L2E OS (Humanoid)
+  l2e_os                        - L2E OS, kernel module and userspace build
+
+Debug Build
+  run_debug                     - Debug build which can be analyzed with tools like valgrind.
+
+Testing
+  test                          - run all tests (inclusive python code, needs python)
+  testc                         - run only tests for run.c C implementation (needs python)
+  testcc                        - run the C tests, without touching pytest / python
+
+Clean/ Purge
+  clean                         - Simple cleaning 
+  distclean                     - Revert to mint condition. Warning: Deletes cloned subprojects.
+
+Misc
+  list                          - Display sorted list of all targets
+
+Help
+  help                          - Display this help. Make without target also displays this help.
 ```
 
-```
-run 			- Default build
-rungnu 			- Generic linux distro build
-runompgnu 		- Generic linux distro + OpenMP build 
-runfast 		- Optimized build
-run_cc_armpl 		- ARM PL BLAS accelerated build (ARM64) (WIP)
-run_cc_blis 		- BLIS accelerated build
-run_cc_cblas 		- Generic CBLAS accelerated build
-run_cc_clblast 		- CLBlast OpenCL CBLAS GPU accelerated build
-run_cc_mac_accel	- Mac OS CBLAS via Accelerate Framework (WIP/TEST)
-run_cc_mkl 		- Intel MKL CBLAS build (x86_64 / intel Mac)(WIP)
-run_cc_openacc		- OpenACC accelerated build
-run_cc_openblas		- Openblas CBLAS accelerated build
-run_cc_openmp		- OpenMP accelerated build
-run_gcc_openmp_incbin	- Gcc + OpenMP + embedded model fast build
-run_gcc_openmp_strlit	- Gcc + OpenMP + embedded model build
-run_clang_openmp_incbin - Clang + OpenMP + embedded model fast build
-run_clang_openmp_strlit	- Clang + OpenMP + embedded model build
-run_gcc_static_incbin	- Static gcc + OpenMP + embedded model fast build
-run_gcc_static_strlit	- Static gcc + OpenMP + embedded model build
-run_clang_static_incbin - Static clang + OpenMP + embedded model fast build
-run_clang_static_strlit - Static clang + OpenMP + embedded model build
-run_cosmocc		- Portable + cosmocc
-run_cosmocc_incbin	- Portable + cosmocc + embedded model fast build (All OSes)
-run_cosmocc_strlit	- Portable + cosmocc + embedded model build (All OSes)
-run_cosmocc_zipos	- Portable + cosmocc + embedded zip model build(All OSes)
-```
 All builds with embedded models need the model to be in ``out/`` directory and the model name has to be ``model.bin``
 
 Example:

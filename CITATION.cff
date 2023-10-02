@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Ignis"
+  given-names: "Vulcan"
+  orcid: "https://orcid.org/0009-0006-6872-9262"
+title: "L2E OS"
+version: v0.1
+doi: 10.5281/zenodo.8330450
+date-released: 2017-12-18
+url: "https://github.com/trholding/llama2.c"

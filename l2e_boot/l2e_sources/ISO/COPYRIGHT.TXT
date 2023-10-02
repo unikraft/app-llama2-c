@@ -1,0 +1,2 @@
+Copyright (C) 2023 L2E OS - Vulcan Ignis @TRHolding @Amica Board
+Contains code whose copyright is owned by their respective project owners.

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
+    xmlns="http://www.loc.gov/MARC21/slim">
+
+  <leader>00928nmmaa22001697  4500</leader>
+  <controlfield tag="005">20230909170024.0</controlfield>
+  <controlfield tag="008">230909b        |||||||gq||b| 00| 0 eng d</controlfield>
+  <datafield tag="040" ind1=" " ind2=" ">
+    <subfield code="c">Vulcan Ignis @L2E</subfield>
+    <subfield code="a">Vulcan Ignis @L2E</subfield>
+  </datafield>
+  <datafield tag="210" ind1=" " ind2=" ">
+    <subfield code="a">L2E OS </subfield>
+  </datafield>
+  <datafield tag="222" ind1=" " ind2=" ">
+    <subfield code="a">L2E OS v0.1 "TEMPLE DOS"</subfield>
+  </datafield>
+  <datafield tag="245" ind1=" " ind2=" ">
+    <subfield code="a">L2E OS v0.1</subfield>
+    <subfield code="h">ISO Image / CDROM</subfield>
+    <subfield code="b">L2E OS v0.1 "TEMPLE DOS" UEFI/BIOS Hybrid Live Boot Disk</subfield>
+    <subfield code="c">Copyright (C) 2023 L2E OS - Vulcan Ignis @TRHolding @Amica Board. Contains code whose copyright is owned by their respective project owners.</subfield>
+  </datafield>
+  <datafield tag="260" ind1=" " ind2=" ">
+    <subfield code="a">International / Web / Internet</subfield>
+    <subfield code="b">Vulcan Ignis @L2E @TRHolding @Amica Board</subfield>
+    <subfield code="c">2023</subfield>
+  </datafield>
+  <datafield tag="270" ind1=" " ind2=" ">
+    <subfield code="m">1ohm@proton.me</subfield>
+    <subfield code="p">Vulcan Ignis</subfield>
+    <subfield code="q">Founder @L2E</subfield>
+  </datafield>
+  <datafield tag="365" ind1=" " ind2=" ">
+    <subfield code="b">99.99</subfield>
+    <subfield code="c">USD</subfield>
+    <subfield code="e">Price is valid only for libraries that offer non free access.</subfield>
+    <subfield code="m">Vulcan Ignis @L2E</subfield>
+  </datafield>
+  <datafield tag="856" ind1=" " ind2=" ">
+    <subfield code="q">application/vnd.efi.iso</subfield>
+    <subfield code="u">https://github.com/trholding/llama2.c</subfield>
+    <subfield code="y">Llama 2 Everywhere OS (L2E OS)</subfield>
+    <subfield code="z">L2E OS Github Repository</subfield>
+  </datafield>
+  <datafield tag="942" ind1=" " ind2=" ">
+    <subfield code="2">z</subfield>
+    <subfield code="n">0</subfield>
+    <subfield code="c">CF</subfield>
+  </datafield>
+</record>
+

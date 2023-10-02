@@ -1,17 +1,34 @@
 /* Inference for Llama-2 Transformer model in pure C 
    The Llama 2 Everywhere @trholding (Vulcan) fork   */
    
+
+// ----------------------------------------------------------------------------
+// L2E Humanoid : Linux Kernel Support Directives
+// 
+
+#define _DEFTOSTR(LSTR) #LSTR
+#define DEFTOSTR(LSTR) _DEFTOSTR(LSTR)
+
+#define LOOPSTATUS 0 // Status off
+
+#ifndef LINUXK
+#define OSPROMPT L2E$
+#endif
+
+#ifdef LINUXK
+#define INC_BIN 
+#define LLOOP
+#define LOOPSTATUS 1 // Status on
+#endif
    
 // ----------------------------------------------------------------------------
-// Unikraft Unikernel Support Directives
+// L2E Asteroid : Unikraft Unikernel Support Directives
 // 
 
 #ifdef UNIK
 #define STRLIT 
 #define LLOOP
 #define LOOPSTATUS 1 // Status on
-#else
-#define LOOPSTATUS 0 // Status off
 #endif
 
 // ----------------------------------------------------------------------------
@@ -83,7 +100,9 @@ __static_yoink("zipos");
 #include <armpl.h>
 #elif defined(AAF)
 #include <Accelerate/Accelerate.h>
-#elif defined(OPENBLAS) || defined(CBLAS)
+#elif defined(OPENBLAS)
+#include "cblas.h"
+#elif defined(CBLAS)
 #include <cblas.h>
 #endif
 
@@ -918,7 +937,7 @@ int main(int argc, char *argv[]) {
     while(1) { // start of loop
     #endif
     prompt=(char*)malloc(1024);
-    printf("\nL2E $ ");
+    printf("\n" DEFTOSTR(OSPROMPT)" ");
     fflush(stdout); 
     inprompt(prompt); // read prompt
     #else
