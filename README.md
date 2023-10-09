@@ -1,6 +1,6 @@
 ## News: Llama 2 Everywhere (L2E) Unikraft unikernel & cloud
 
-The cool folks at [Unikraft cloud](https://unikraft.org/) have a offical unikraft fork of L2E unikraft unikernel here: [app-llama2-c](https://github.com/unikraft/app-llama2-c) be sure to try it out and support them by purchasing cloud accounts. They are super cool and they have contributed some unikraft way fixes to L2E and guess what? A web API! (I have to merge it asap). Thank you @razvand & [@felipehuici](https://twitter.com/felipehuici) for making this possible.
+The cool folks at [Unikraft](https://unikraft.org/) / [Kraft Cloud](https://kraft.cloud/) have a offical unikraft fork of L2E unikraft unikernel here: [app-llama2-c](https://github.com/unikraft/app-llama2-c) be sure to try it out and support them by purchasing cloud accounts. They are super cool and they have contributed some unikraft way fixes to L2E and guess what? A web API! (I have to merge it asap). Thank you @razvand & [@felipehuici](https://twitter.com/felipehuici) for making this possible.
 
 Why you should use unikraft? Lightening fast (ms) boot up of your applications in cloud vms, added security and isolation, lower cost ie high density - allows you to run way more processes on a single server, added performance - less overhead OS code so your code get the 99.99% of resources!
 
