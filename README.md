@@ -1,6 +1,6 @@
 ### News: Llama 2 Everywhere (L2E) Unikraft unikernel & cloud
 
-See: [Scroll to news.](https://github.com/trholding/llama2.c/edit/master/README.md#news-llama-2-everywhere-l2e-unikraft-unikernel--cloud-1)
+See: [Scroll to news.](https://github.com/trholding/llama2.c/master/README.md#news-llama-2-everywhere-l2e-unikraft-unikernel--cloud-1)
 
 ## Llama 2 Everywhere (L2E)
 
