@@ -4,7 +4,7 @@ The cool folks at [Unikraft](https://unikraft.org/) / [Kraft Cloud](https://kraf
 
 Why you should use unikraft? Lightening fast (ms) boot up of your applications in cloud vms, added security and isolation, lower cost ie high density - allows you to run way more processes on a single server, added performance - less overhead OS code so your code get the 99.99% of resources!
 
-We love unikraft so much that the future versions the L2E OS (linux) will have KVM and selfhosting support and demo instances of L2E unikraft unikernels kernels so that you can test drive unikraft on your own machine!
+We love unikraft so much that the future versions the L2E OS (linux) will have KVM and selfhosting support and demo instances of L2E unikraft unikernels so that you can test drive unikraft unikernels on your own machine!
 
 I highly recommend you to have a unikraft cloud account and purchase a basic plan, either just for the heck of it or to support their great endeavour. Unikraft unikernels is something which I wanted 10 years ago. Imagine how much energy and hardware it could have saved! The web needs to be more efficient.
 
