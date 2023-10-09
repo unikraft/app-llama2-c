@@ -279,6 +279,7 @@ void read_checkpoint(char* checkpoint, Config* config, TransformerWeights* weigh
     // memory map the Transformer weights
     *data = (float*)(checkpoint + sizeof(Config));    
     float* weights_ptr = *data;
+    *fd = -1;
     memory_map_weights(weights, config, weights_ptr, shared_weights);
 }
 #else
