@@ -1,7 +1,6 @@
 ### News: Llama 2 Everywhere (L2E) Unikraft unikernel & cloud
 
-See: [Scroll to news.](https://github.com/trholding/llama2.c/master/README.md#news-llama-2-everywhere-l2e-unikraft-unikernel--cloud-1)
-
+See: [Scroll to News](https://github.com/trholding/llama2.c#news-llama-2-everywhere-l2e-unikraft-unikernel--cloud-1)
 ## Llama 2 Everywhere (L2E)
 
 Note: Much gratitude for all the upvotes on HN, Twitter, Reddit and other places. I'll take time this week to polish this up a bit. For the OS, please download it from the releases. The current system requirements are 512MB RAM and a x86_64 (64bit) PC. It's not very usable yet. We are working to make it better. Feel free to sponsor us if you like the idea of a useful AI OS that runs on minimal hardware. You can find me on twitter/X here: [@VulcanIgnis](https://twitter.com/VulcanIgnis) Please note that this project is built on the shoulders of giants. Find the credits at the bottom.
