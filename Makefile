@@ -202,18 +202,6 @@ run_clang_static_strlit: ##	- Optimized Static clang + embedded model build
 	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
 	clang -Ofast -static -march=native -D STRLIT -D LLOOP run.c  -lm  -o run
 	
-# Unikraft Unikernel build
-.PHONY: run_unik_qemu_x86_64
-run_unik_qemu_x86_64: run.c
-	[ ! -d "UNIK" ] && echo "Cloning unikraft and musl sources..." || true
-	[ ! -d "UNIK/unikraft" ] && git clone https://github.com/unikraft/unikraft UNIK/unikraft || true
-	[ ! -d "UNIK/libs/musl" ] && git clone https://github.com/unikraft/lib-musl UNIK/libs/musl || true
-	UK_DEFCONFIG=$(shell pwd)/defconfigs/qemu-x86_64 make -f Makefile.unikernel defconfig
-	gcc -Ofast strliteral.c -o strlit
-	./strlit -i emb_Model_data $(MOD_PATH) model.h
-	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
-	make -f Makefile.unikernel
-
 # Build for termux on Android
 ##@ ---> Android
 
@@ -229,6 +217,23 @@ l2e_unik_qemu: get_model ##		- L2E Unikernel (Asteroid) for kvm / qemu x86_64
 	if [ ! -d "UNIK" ]; then echo "Cloning unikraft 0.14.0 and musl sources..." ; fi
 	if [ ! -d "UNIK/unikraft" ]; then git clone -b RELEASE-0.14.0 --single-branch https://github.com/unikraft/unikraft UNIK/unikraft ; fi
 	if [ ! -d "UNIK/libs/musl" ]; then git clone -b RELEASE-0.14.0 --single-branch https://github.com/unikraft/lib-musl UNIK/libs/musl ; fi
+	UK_DEFCONFIG=$(shell pwd)/defconfigs/qemu-x86_64 make -f Makefile.unikernel defconfig
+	$(CC) -Ofast strliteral.c -o strlit
+	./strlit -i emb_Model_data $(MOD_PATH) model.h
+	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
+	make -f Makefile.unikernel
+	
+##@ ---> L2E Unikernel (Latest) (Asteroid)	
+# Unikraft Unikernel latest version build
+.PHONY: l2e_unik_qemu_latest
+l2e_unik_qemu_latest: get_model ##		- L2E Unikernel (Latest unikraft unikernel) (Asteroid) for kvm / qemu x86_64
+	if [ ! -d "UNIK" ]; then echo "Cloning latest unikraft and musl sources..." ; fi
+	if [ ! -d "UNIK/unikraft" ]; then git clone https://github.com/unikraft/unikraft UNIK/unikraft ; fi
+	if [ ! -d "UNIK/libs/musl" ]; then git clone https://github.com/unikraft/lib-musl UNIK/libs/musl ; fi	
+	UK_DEFCONFIG=$(shell pwd)/defconfigs/qemu-x86_64 make -f Makefile.unikernel defconfig
+	$(CC) -Ofast strliteral.c -o strlit
+	./strlit -i emb_Model_data $(MOD_PATH) model.h
+	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
 	make -f Makefile.unikernel
 
 ##@ ---> L2E Unikernel (Asteroid) ---> Boot in qemu
