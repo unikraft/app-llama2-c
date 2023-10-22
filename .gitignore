@@ -9,3 +9,4 @@ model.h
 workdir/
 build/
 stories15M.bin
+model.bin

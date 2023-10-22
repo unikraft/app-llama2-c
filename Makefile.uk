@@ -3,3 +3,15 @@ L2E_SRCS-y += $(L2E_BASE)/run.c
 L2E_SRCS-y += $(L2E_BASE)/model.h
 L2E_SRCS-y += $(L2E_BASE)/tokenizer.h
 L2E_CFLAGS-y += -DUNIK
+
+$(L2E_BASE)/model.h: $(L2E_BASE)/strlit $(L2E_BASE)/model.bin
+	$(L2E_BASE)/strlit -i emb_Model_data $(L2E_BASE)/model.bin $@
+
+$(L2E_BASE)/model.bin:
+	$(WGET) -O $@ https://huggingface.co/karpathy/tinyllamas/resolve/main/stories15M.bin
+
+$(L2E_BASE)/tokenizer.h: $(L2E_BASE)/strlit
+	$(L2E_BASE)/strlit -i emb_Tokenizer_data $(L2E_BASE)/tokenizer.bin $@
+
+$(L2E_BASE)/strlit:
+	$(CC) -Ofast $(L2E_BASE)/strliteral.c -o $@
