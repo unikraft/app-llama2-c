@@ -1,6 +1,3 @@
-### News: Llama 2 Everywhere (L2E) Unikraft unikernel & cloud
-
-See: [Scroll to News](https://github.com/trholding/llama2.c#news-llama-2-everywhere-l2e-unikraft-unikernel--cloud-1)
 ## Llama 2 Everywhere (L2E)
 
 Note: Much gratitude for all the upvotes on HN, Twitter, Reddit and other places. I'll take time this week to polish this up a bit. For the OS, please download it from the releases. The current system requirements are 512MB RAM and a x86_64 (64bit) PC. It's not very usable yet. We are working to make it better. Feel free to sponsor us if you like the idea of a useful AI OS that runs on minimal hardware. You can find me on twitter/X here: [@VulcanIgnis](https://twitter.com/VulcanIgnis) Please note that this project is built on the shoulders of giants. Find the credits at the bottom.
@@ -453,58 +450,89 @@ Usage:
 
 Simple Builds
   run_cc                        - Standard build with basic optimizations
+  runq_cc                       - Same for quantized build
   run_cc_fast                   - More Optimized build. Disregards strict standards compliance
+  runq_cc_fast                  - Same for quantized build
   run_cc_gnu                    - Optimized Generic linux distro build
+  runq_cc_gnu                   - Same for quantized build
 
 Accelerated Builds
   run_cc_openmp                 - OpenMP accelerated build
+  runq_cc_openmp                - Same for quantized build
   run_cc_openacc                - OpenACC accelerated build
+  runq_cc_openacc               - Same for quantized build
   run_cc_omp_gnu                - Generic linux distro + OpenMP build
+  runq_cc_omp_gnu               - Same for quantized build
   run_cc_clblast                - CLBlast OpenCL CBLAS GPU accelerated build
+  runq_cc_clblast               - Same for quantized build
   run_cc_openblas               - Openblas CBLAS accelerated build
+  runq_cc_openblas              - Same for quantized build
   run_cc_cblas                  - Generic CBLAS accelerated build
+  runq_cc_cblas                 - Same for quantized build
   run_cc_blis                   - BLIS accelerated build
+  runq_cc_blis                  - Same for quantized build
 
 Special Builds 
 
 ---> x86_64
   run_cc_mkl                    - OpenMP + Intel MKL CBLAS build (x86_64 / intel Mac) (WIP)
+  runq_cc_mkl                   - Same for quantized build
 
 ---> ARM64 / aarch64
   run_cc_armpl                  - ARM PL BLAS accelerated build (ARM64 & Mac)  (WIP)
+  runq_cc_armpl                 - Same for quantized build
 
 ---> Macintosh
   run_cc_mac_accel              - Mac OS OPENMP + CBLAS via Accelerate Framework build (WIP/TEST)
+  runq_cc_mac_accel             - Same for quantized build
 
 ---> Windows
   run_win                       - Optimized Windows build with MinGW-w64 toolchain
+  runq_win                      - Same for quantized build
   run_win_msvc                  - OpenMP accelerated Windows build with MSVC toolchain (Untested)
+  runq_win_msvc                 - Same for quantized build
 
 ---> MultiOS Builds (using cosmopolitan libc + toolchain)
   run_cosmocc                   - Optimized Portable + cosmocc (runs on all OSes)
+  runq_cosmocc                  - Same for quantized build
 
 ---> MultiOS Builds ---> with Embedded Models
   run_cosmocc_zipos             - Optimized Portable + cosmocc + embedded zip model build (runs on all OSes)
+  runq_cosmocc_zipos            - Same for quantized build
   run_cosmocc_incbin            - Optimized Portable + cosmocc + embedded model fast build (runs on all OSes)
+  runq_cosmocc_incbin           - Same for quantized build
   run_cosmocc_strlit            - Optimized Portable + cosmocc + embedded model build (runs on all OSes)
+  runq_cosmocc_strlit           - Same for quantized build
 
 ---> GCC/Clang Embedded Model Builds
   run_gcc_openmp_incbin         - Gcc + OpenMP + embedded model fast build
+  runq_gcc_openmp_incbin        - Same for quantized build
   run_gcc_openmp_strlit         - Gcc + OpenMP + embedded model build
+  runq_gcc_openmp_strlit        - Same for quantized build
   run_clang_openmp_incbin       - Clang + OpenMP + embedded model fast build
+  runq_clang_openmp_incbin      - Same for quantized build
   run_clang_openmp_strlit       - Clang + OpenMP + embedded model build
+  runq_clang_openmp_strlit      - Same for quantized build
 
 ---> GCC/Clang Embedded Model Builds ---> Statically Linked
   run_gcc_static_incbin         - Optimized Static gcc + embedded model fast build
+  runq_gcc_static_incbin        - Same for quantized build
   run_gcc_static_strlit         - Optimized Static gcc + embedded model build
+  runq_gcc_static_strlit        - Same for quantized build
   run_clang_static_incbin       - Optimized Static clang + embedded model fast build
+  runq_clang_static_incbin      - Same for quantized build
   run_clang_static_strlit       - Optimized Static clang + embedded model build
+  runq_clang_static_strlit      - Same for quantized build
 
 ---> Android
   run_incbin_tmux               - Optimized build + Embedded Model for Termux on Android
+  runq_incbin_tmux              - Same for quantized build
 
 ---> L2E Unikernel (Asteroid)
   l2e_unik_qemu                 - L2E Unikernel (Asteroid) for kvm / qemu x86_64
+
+---> L2E Unikernel (Latest) (Asteroid)
+  l2e_unik_qemu_latest          - L2E Unikernel (Latest unikraft unikernel) (Asteroid) for kvm / qemu x86_64
 
 ---> L2E Unikernel (Asteroid) ---> Boot in qemu
   boot_l2e_unik                 - Boot L2E Unikernel (Asteroid) in qemu
@@ -544,7 +572,6 @@ Misc
 
 Help
   help                          - Display this help. Make without target also displays this help.
-
 ```
 
 All builds with embedded models need the model to be in ``out/`` directory and the model name has to be ``model.bin``
