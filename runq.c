@@ -509,9 +509,9 @@ void matmul(float* xout, QuantizedTensor *x, QuantizedTensor *w, int n, int d) {
 
     int i;
 // L2E Addition
-    #ifdef BLAS // TODO: FIX INTQ8
+    /* #ifdef BLAS // TODO: FIX INTQ8
     cblas_sgemv(CblasRowMajor, CblasNoTrans, d, n, 1.0f, w, n, x, 1, 0.0f, xout, 1);
-    #else
+    #else */
     #ifdef ACCEL
     ACCEL(i) // OMP/OACC Macro
     #endif
@@ -533,7 +533,7 @@ void matmul(float* xout, QuantizedTensor *x, QuantizedTensor *w, int n, int d) {
         xout[i] = val;
     }
 // L2E Addition
-    #endif
+    /* #endif */
 // END L2E Addition 
 }
 
