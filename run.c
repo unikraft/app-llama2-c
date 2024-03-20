@@ -274,15 +274,19 @@ void memory_map_weights(TransformerWeights *w, Config* p, float* ptr, int shared
 #if defined (INC_BIN) || defined(STRLIT)
 void read_checkpoint(char* checkpoint, Config* config, TransformerWeights* weights, 
                      int* fd, float** data, ssize_t* file_size) {
-    // read config header directly from the checkpoint data
-    memcpy(config, checkpoint, sizeof(Config));
+    // Calculate the file size from the raw data
+    *file_size = strlen(checkpoint);
+
+    // memory map the Transformer weights into the data pointer
+    *fd = -1; // No file descriptor is needed since we're not opening a file
+    *data = (float*) checkpoint;
+
+    // read in the config header
+    memcpy(config, *data, sizeof(Config));
     int shared_weights = config->vocab_size > 0 ? 1 : 0;
     config->vocab_size = abs(config->vocab_size);
-    *file_size = strlen(checkpoint); // get the data size, in bytes
-    // memory map the Transformer weights
-    *data = (float*) checkpoint;
+
     float* weights_ptr = *data + sizeof(Config)/sizeof(float);
-    *fd = -1;
     memory_map_weights(weights, config, weights_ptr, shared_weights);
 }
 #else
