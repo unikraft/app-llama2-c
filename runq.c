@@ -1,5 +1,137 @@
 /* Inference for Llama-2 Transformer model in pure C, int8 quantized forward pass. */
 
+// L2E Addition
+/* The Llama 2 Everywhere @trholding (Vulcan) fork   */
+
+// ----------------------------------------------------------------------------
+// L2E : Global Variables
+// 
+
+int buffertokens = 1;     // output token buffer size
+int stats = 1;     // extended status info
+
+// ----------------------------------------------------------------------------
+// L2E Humanoid : Linux Kernel Support Directives
+// 
+
+#define _DEFTOSTR(LSTR) #LSTR
+#define DEFTOSTR(LSTR) _DEFTOSTR(LSTR)
+
+#define LOOPSTATUS 0 // Status off
+
+#ifndef LINUXK
+#define OSPROMPT L2E$
+#endif
+
+#ifdef LINUXK
+#define INC_BIN 
+#define LLOOP
+#define LOOPSTATUS 1 // Status on
+#endif
+   
+// ----------------------------------------------------------------------------
+// L2E Asteroid : Unikraft Unikernel Support Directives
+// 
+
+#ifdef UNIK
+#define STRLIT 
+#define LLOOP
+#define LOOPSTATUS 1 // Status on
+#endif
+
+// ----------------------------------------------------------------------------
+// INCBIN Embedding Support Directives
+// https://github.com/graphitemaster/incbin
+
+// String substitution macro needed to pass paths to INCBIN
+#define ADDPATH(FPATH) TOSTR(FPATH)
+#define TOSTR(FPATH) #FPATH
+
+#ifdef INC_BIN // Support for embedding model and tokenizer
+
+#define INCBIN_PREFIX emb_
+#define INCBIN_STYLE INCBIN_STYLE_SNAKE
+#include "incbin.h"
+
+#ifndef MODPATH
+#define MODPATH out/model.bin // default model path
+#endif
+#ifndef TOKPATH
+#define TOKPATH tokenizer.bin // default tokenizer path
+#endif
+
+INCBIN(Model, ADDPATH(MODPATH)); // Model path is passed via makefile
+INCBIN(Tokenizer, ADDPATH(TOKPATH)); // Tokenizer path is passed via makefile
+
+#endif
+
+// ----------------------------------------------------------------------------
+// strliteral (STRLIT) Embedding Support Directives
+// https://github.com/mortie/strliteral
+
+#ifdef STRLIT
+#include "model.h"
+#include "tokenizer.h"
+#endif
+
+// ----------------------------------------------------------------------------
+// Actually Portable Executable Format Preprocessor Directives
+
+#ifdef COSMO_BLINK // Support ARM 64 Bit via Blink VM Emulation
+__static_yoink("blink_linux_aarch64");  // for raspberry pi
+__static_yoink("blink_xnu_aarch64");    // is apple silicon
+#endif
+
+#ifdef COSMO_METAL // Support VGA Console when running bare metal
+__static_yoink("vga_console");
+#endif
+
+#ifdef COSMO_ZIP // Support embedded models via Zip Archive support
+__static_yoink("zipos");
+#endif
+
+// ----------------------------------------------------------------------------
+// BLAS Support
+
+#if defined(CLBLAST) || defined(OPENBLAS) || defined(CBLAS) || defined(BLIS) || defined(MKL) || defined(ARMPL) || defined(AAF)
+#define BLAS
+#endif
+
+#ifdef CLBLAST
+#include <clblast_netlib_c.h>
+#elif defined(BLIS)
+#include "blis.h"
+#include "cblas.h"
+#elif defined(MKL)
+#include "mkl.h"
+#elif defined(ARMPL)
+#include <armpl.h>
+#elif defined(AAF)
+#include <Accelerate/Accelerate.h>
+#elif defined(OPENBLAS)
+#include "cblas.h"
+#elif defined(CBLAS)
+#include <cblas.h>
+#endif
+
+// ----------------------------------------------------------------------------
+// OpenMP and OpenACC Support
+
+// Macro that makes a pragma enabled with string substitution
+#define MKPRAGMA_(x) _Pragma (#x)
+#define MK_PRAGMA(x) MKPRAGMA_(x)
+
+// Portable OpenMP and OpenACC pragma macros
+#ifdef OPENMP
+#define ACCEL(VAR) MK_PRAGMA(omp parallel for private(VAR))
+#elif defined(OPENACC)
+#define ACCEL(VAR) MK_PRAGMA(acc parallel loop private(VAR))
+#endif
+
+// ----------------------------------------------------------------------------
+// Standard Headers
+// END L2E Addition
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -216,6 +348,51 @@ void memory_map_weights(TransformerWeights *w, Config* p, void* ptr, uint8_t sha
     w->wcls = shared_classifier ? w->q_tokens : init_quantized_tensors(&ptr, 1, p->dim * p->vocab_size);
 }
 
+// L2E Addition
+#if defined (INC_BIN) || defined(STRLIT)
+void read_checkpoint(char* checkpoint, Config* config, TransformerWeights* weights,
+int* fd, float** data, ssize_t* file_size) {
+    // Calculate the file size from the raw data
+    *file_size = strlen(checkpoint);
+
+    // memory map the Transformer weights into the data pointer
+    *fd = -1; // No file descriptor is needed since we're not opening a file
+    *data = (float*) checkpoint;
+
+    // Create a byte pointer to navigate the data
+    uint8_t* ptr = (uint8_t*) *data;
+
+    // read in magic number (uint32), has to be 0x616b3432, i.e. "ak42" in ASCII
+    uint32_t magic_number = *(uint32_t*) ptr;
+    ptr += sizeof(uint32_t);
+    if (magic_number != 0x616b3432) { fprintf(stderr, "Bad magic number\n"); exit(EXIT_FAILURE); }
+
+    // read in the version number (uint32), has to be 2
+    int version = *(int*) ptr;
+    ptr += sizeof(int);
+    if (version != 2) { fprintf(stderr, "Bad version %d, need version 2\n", version); exit(EXIT_FAILURE); }
+
+    int header_size = 256; // the header size for version 2 in bytes
+
+    // read in the Config
+    memcpy(config, ptr, sizeof(Config));
+    ptr += sizeof(Config);
+
+    // read in flags
+    uint8_t shared_classifier = *(uint8_t*) ptr;
+    ptr += sizeof(uint8_t);
+
+    int group_size = *(int*) ptr;
+    ptr += sizeof(int);
+
+    GS = group_size; // set as global, as it will be used in many places
+
+    void* weights_ptr = ((char*)*data) + header_size; // skip header bytes
+    memory_map_weights(weights, config, weights_ptr, shared_classifier);
+}
+#else
+// END L2E Addition
+
 void read_checkpoint(char* checkpoint, Config* config, TransformerWeights* weights,
                      int* fd, float** data, ssize_t* file_size) {
     FILE *file = fopen(checkpoint, "rb");
@@ -249,6 +426,9 @@ void read_checkpoint(char* checkpoint, Config* config, TransformerWeights* weigh
     void* weights_ptr = ((char*)*data) + header_size; // skip header bytes. char is 1 byte
     memory_map_weights(weights, config, weights_ptr, shared_classifier);
 }
+// L2E Addition
+#endif
+// END L2E Addition
 
 void build_transformer(Transformer *t, char* checkpoint_path) {
     // read in the Config and the Weights from the checkpoint
@@ -282,9 +462,17 @@ void free_transformer(Transformer* t) {
 void rmsnorm(float* o, float* x, float* weight, int size) {
     // calculate sum of squares
     float ss = 0.0f;
+// L2E Addition
+    #ifdef BLAS
+    ss = cblas_sdot(size, x, 1.0f, x, 1.0f);
+    #else
+// END L2E Addition
     for (int j = 0; j < size; j++) {
         ss += x[j] * x[j];
     }
+// L2E Addition
+    #endif
+// END L2E Addition
     ss /= size;
     ss += 1e-5f;
     ss = 1.0f / sqrtf(ss);
@@ -320,9 +508,15 @@ void matmul(float* xout, QuantizedTensor *x, QuantizedTensor *w, int n, int d) {
     // inputs to this function are both quantized
 
     int i;
-    #pragma omp parallel for private(i)
+// L2E Addition
+    #ifdef BLAS // TODO: FIX INTQ8
+    cblas_sgemv(CblasRowMajor, CblasNoTrans, d, n, 1.0f, w, n, x, 1, 0.0f, xout, 1);
+    #else
+    #ifdef ACCEL
+    ACCEL(i) // OMP/OACC Macro
+    #endif
+// END L2E Addition
     for (i = 0; i < d; i++) {
-
         float val = 0.0f;
         int32_t ival = 0;
         int in = i * n;
@@ -336,9 +530,11 @@ void matmul(float* xout, QuantizedTensor *x, QuantizedTensor *w, int n, int d) {
             val += ((float) ival) * w->s[(in + j) / GS] * x->s[j / GS];
             ival = 0;
         }
-
         xout[i] = val;
     }
+// L2E Addition
+    #endif
+// END L2E Addition 
 }
 
 float* forward(Transformer* transformer, int token, int pos) {
@@ -395,7 +591,11 @@ float* forward(Transformer* transformer, int token, int pos) {
 
         // multihead attention. iterate over all heads
         int h;
-        #pragma omp parallel for private(h)
+// L2E Addition
+        #ifdef ACCEL
+        ACCEL(h) // OMP/OACC Macro
+        #endif
+// END L2E Addition
         for (h = 0; h < p->n_heads; h++) {
             // get the query vector for this head
             float* q = s->q + h * head_size;
@@ -512,6 +712,34 @@ void build_tokenizer(Tokenizer* t, char* tokenizer_path, int vocab_size) {
         t->byte_pieces[i * 2] = (unsigned char)i;
         t->byte_pieces[i * 2 + 1] = '\0';
     }
+// L2E Addition
+#if defined (INC_BIN) || defined(STRLIT)
+    // Parse the data from tokenizer_path
+    char* token_data = tokenizer_path;
+    int token_data_offset = 0;
+
+    // Read the max_token_length from token_data
+    memcpy(&t->max_token_length, token_data, sizeof(int));
+    token_data_offset += sizeof(int);
+
+    int len;
+    for (int i = 0; i < vocab_size; i++) {
+        // Read the vocab_scores from token_data
+        memcpy(t->vocab_scores + i, token_data + token_data_offset, sizeof(float));
+        token_data_offset += sizeof(float);
+
+        // Read the length of the vocabulary token
+        memcpy(&len, token_data + token_data_offset, sizeof(int));
+        token_data_offset += sizeof(int);
+
+        // Allocate memory for the vocabulary token and copy the data
+        t->vocab[i] = (char*)malloc(len + 1);
+        memcpy(t->vocab[i], token_data + token_data_offset, len);
+        t->vocab[i][len] = '\0'; // add the string terminating token
+        token_data_offset += len;
+    }
+#else
+// END L2E Addition
     // read in the file
     FILE *file = fopen(tokenizer_path, "rb");
     if (!file) { fprintf(stderr, "couldn't load %s\n", tokenizer_path); exit(EXIT_FAILURE); }
@@ -525,6 +753,9 @@ void build_tokenizer(Tokenizer* t, char* tokenizer_path, int vocab_size) {
         t->vocab[i][len] = '\0'; // add the string terminating token
     }
     fclose(file);
+// L2E Addition
+#endif
+// END L2E Addition
 }
 
 void free_tokenizer(Tokenizer* t) {
@@ -863,12 +1094,22 @@ void generate(Transformer *transformer, Tokenizer *tokenizer, Sampler *sampler, 
     int next;        // will store the next token in the sequence
     int token = prompt_tokens[0]; // kick off with the first token in the prompt
     int pos = 0;     // position in the sequence
+// L2E Addition
+    int bufferflush = 1; // token counter for flushing buffer
+    static char outbuff[4096 * (6 + 2)] ; // buffersize is context length * average size of subwords + margin
+    
+    // Todo: we can do buffering without setvbuff, implement that
+    // setvbuf is used to buffer output into outbuff instead of flushing to screen directly
+    if (setvbuf(stdout, outbuff, _IOFBF, sizeof(outbuff)) != 0) {
+    puts("Error: Buffer allocation!"); exit(EXIT_FAILURE);
+    }
+// END L2E Addition
     while (pos < steps) {
 
         // forward the transformer to get logits for the next token
         float* logits = forward(transformer, token, pos);
 
-        // advance the state state machine
+        // advance the state machine
         if (pos < num_prompt_tokens - 1) {
             // if we are still processing the input prompt, force the next prompt token
             next = prompt_tokens[pos + 1];
@@ -884,18 +1125,24 @@ void generate(Transformer *transformer, Tokenizer *tokenizer, Sampler *sampler, 
         // print the token as string, decode it with the Tokenizer object
         char* piece = decode(tokenizer, token, next);
         safe_printf(piece); // same as printf("%s", piece), but skips "unsafe" bytes
-        fflush(stdout);
+// L2E Addition
+        if (bufferflush==pos) { fflush(stdout); bufferflush+=buffertokens; } 
+// END L2E Addition
         token = next;
 
         // init the timer here because the first iteration can be slower
         if (start == 0) { start = time_in_ms(); }
     }
     printf("\n");
-
+// L2E Addition
+    fflush(stdout); // This could be in the if next break, and the print new line prepended to achieved tok/s
+// END L2E Addition
     // report achieved tok/s (pos-1 because the timer starts after first iteration)
     if (pos > 1) {
         long end = time_in_ms();
-        fprintf(stderr, "achieved tok/s: %f\n", (pos-1) / (double)(end-start)*1000);
+// L2E Addition
+        if(stats){ fprintf(stderr, "achieved tok/s: %f\n", (pos-1) / (double)(end-start)*1000); }
+// END L2E Addition
     }
 
     free(prompt_tokens);
@@ -1002,6 +1249,21 @@ void chat(Transformer *transformer, Tokenizer *tokenizer, Sampler *sampler,
     free(prompt_tokens);
 }
 
+// L2E Addition
+// ----------------------------------------------------------------------------
+// LLama 2 Everywhere read prompt utility function
+
+#if defined(COSMO_ZIP) || defined(INC_BIN) || defined(STRLIT)
+void inprompt(char *lprompt) // Handle prompts
+{
+    fgets(lprompt, 1024, stdin);
+    lprompt[strcspn(lprompt, "\n")] = '\0';
+}
+#endif
+
+// ----------------------------------------------------------------------------
+// Main Section
+// END L2E Addition
 
 // ----------------------------------------------------------------------------
 // CLI, include only if not testing
@@ -1019,6 +1281,10 @@ void error_usage() {
     fprintf(stderr, "  -z <string> optional path to custom tokenizer\n");
     fprintf(stderr, "  -m <string> mode: generate|chat, default: generate\n");
     fprintf(stderr, "  -y <string> (optional) system prompt in chat mode\n");
+// L2E Addition
+    fprintf(stderr, "  -b <int>    number of tokens to buffer, default 1. 0 = max_seq_len\n");
+    fprintf(stderr, "  -x <int>    extended info / stats, default 1 = on. 0 = off\n");    
+// END L2E Addition
     exit(EXIT_FAILURE);
 }
 
@@ -1034,7 +1300,30 @@ int main(int argc, char *argv[]) {
     unsigned long long rng_seed = 0; // seed rng with time by default
     char *mode = "generate";    // generate|chat
     char *system_prompt = NULL; // the (optional) system prompt to use in chat mode
-
+// L2E Addition
+    #if defined(COSMO_ZIP) || defined(INC_BIN) || defined(STRLIT) // special case for embedded models
+    // we read the embedded checkpoint from within the executable
+    #ifdef UNIK
+    printf("\n*** GURU UNMEDITATION :: BOOT > LLAMA HAS AWAKENED ***\n\n");
+    #endif
+    #if defined(COSMO_ZIP)
+    checkpoint_path = "/zip/out/model.bin";
+    tokenizer_path = "/zip/tokenizer.bin";
+    #elif defined(INC_BIN) || defined(STRLIT)
+    checkpoint_path = emb_Model_data;
+    tokenizer_path = emb_Tokenizer_data;
+    #endif
+    buffertokens=8;
+    #ifdef LLOOP
+    stats = LOOPSTATUS;
+    while(1) { // start of loop
+    #endif
+    prompt=(char*)malloc(1024);
+    printf("\n" DEFTOSTR(OSPROMPT)" ");
+    fflush(stdout); 
+    inprompt(prompt); // read prompt
+    #else
+// END L2E Addition
     // poor man's C argparse so we can override the defaults above from the command line
     if (argc >= 2) { checkpoint_path = argv[1]; } else { error_usage(); }
     for (int i = 2; i < argc; i+=2) {
@@ -1051,9 +1340,15 @@ int main(int argc, char *argv[]) {
         else if (argv[i][1] == 'z') { tokenizer_path = argv[i + 1]; }
         else if (argv[i][1] == 'm') { mode = argv[i + 1]; }
         else if (argv[i][1] == 'y') { system_prompt = argv[i + 1]; }
+// L2E Addition
+        else if (argv[i][1] == 'b') { buffertokens = atoi(argv[i + 1]); }
+        else if (argv[i][1] == 'x') { stats = atoi(argv[i + 1]); }
+// END L2E Addition
         else { error_usage(); }
     }
-
+// L2E Addition
+    #endif
+// END L2E Addition
     // parameter validation/overrides
     if (rng_seed <= 0) rng_seed = (unsigned int)time(NULL);
     if (temperature < 0.0) temperature = 0.0;
@@ -1087,6 +1382,14 @@ int main(int argc, char *argv[]) {
     free_sampler(&sampler);
     free_tokenizer(&tokenizer);
     free_transformer(&transformer);
+// L2E Addition
+    #if defined(COSMO_ZIP) || defined(INC_BIN) || defined(STRLIT)
+    #ifdef LLOOP
+    printf("\n");
+    } // end of loop
+    #endif
+    #endif    
+// END L2E Addition
     return 0;
 }
 #endif
