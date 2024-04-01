@@ -455,7 +455,6 @@ Simple Builds
   runq_cc_fast                  - Same for quantized build
   run_cc_gnu                    - Optimized Generic linux distro build
   runq_cc_gnu                   - Same for quantized build
-  run_cc_mmdebug                - ***NEW*** Matmul Debug Log build (Warning: Huge Logs)
 
 Accelerated Builds
   run_cc_avx                    - ***NEW*** AVX accelerated build
@@ -556,7 +555,7 @@ Special Builds
 
 Debug Build
   run_debug                     - Debug build which can be analyzed with tools like valgrind.
-  run_cc_bcdebug                - ***NEW*** C to LLVM bitcode & LLVM bitcode to C transpiled debug build
+  run_cc_bcdebug                - ***NEW*** Emit LLVM bitcode & transpile to C debug build
   runq_cc_bcdebug               - Same for quantized build
   run_cc_mmdebug                - ***NEW*** Matmul Debug Log build (Warning: Huge Logs)
 

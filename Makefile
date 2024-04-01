@@ -524,7 +524,7 @@ run_debug: ##		- Debug build which can be analyzed with tools like valgrind.
 	$(CC) -g -o run run.c -lm
 
 .PHONY: run_cc_bcdebug
-run_cc_bcdebug: ##		- ***NEW*** C to LLVM bitcode & LLVM bitcode to C transpiled debug build
+run_cc_bcdebug: ##		- ***NEW*** Emit LLVM bitcode & transpile to C debug build
 	echo "Requires clang-17, and llvm-cbe to be compiled and added to path."
 	echo "Get llvm-cbe here: https://github.com/JuliaHubOSS/llvm-cbe"
 	clang-17 -march=native -mtune=native  -S -emit-llvm -g run.c  
