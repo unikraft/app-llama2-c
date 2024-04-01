@@ -442,6 +442,48 @@ void avx_matmul(float* xout, const float* x, const float* w, int n, int d) {
     }
 }
 #endif
+
+#ifdef MMDEBUG
+void debug_matmul(float* xout, float* x, float* w, int n, int d) {
+    // W (d,n) @ x (n,) -> xout (d,)
+    // by far the most amount of time is spent inside this little function
+
+    // Print input values to stderr
+    fprintf(stderr, "<<<<<<< Input x: >>>>>>> ");
+    for (int i = 0; i < n; i++) {
+        fprintf(stderr, "%f ", x[i]);
+    }
+    fprintf(stderr, "\n");
+
+    fprintf(stderr, "<<<<<<< Input w: >>>>>>> ");
+    for (int i = 0; i < d; i++) {
+        for (int j = 0; j < n; j++) {
+            fprintf(stderr, "%f ", w[i * n + j]);
+        }
+        // fprintf(stderr, "\n");
+    }
+    fprintf(stderr, "\n");
+    
+    int i;
+    #ifdef ACCEL
+    ACCEL(i)
+    #endif
+    for (i = 0; i < d; i++) {
+        float val = 0.0f;
+        for (int j = 0; j < n; j++) {
+            val += w[i * n + j] * x[j];
+        }
+        xout[i] = val;
+    }
+
+    // Print output values to stderr
+    fprintf(stderr, "<<<<<<< Output xout: >>>>>>> ");
+    for (int i = 0; i < d; i++) {
+        fprintf(stderr, "%f ", xout[i]);
+    }
+    fprintf(stderr, "\n");
+}
+#endif
 // END L2E Addition 
 
 void matmul(float* xout, float* x, float* w, int n, int d) {
@@ -453,6 +495,8 @@ void matmul(float* xout, float* x, float* w, int n, int d) {
     cblas_sgemv(CblasRowMajor, CblasNoTrans, d, n, 1.0f, w, n, x, 1, 0.0f, xout, 1);
     #elif defined(ACCELAVX)
     avx_matmul(xout, x, w, n, d);
+    #elif defined(MMDEBUG)
+    debug_matmul(xout, x, w, n, d);
     #else
     #ifdef ACCEL
     ACCEL(i) // OMP/OACC Macro
@@ -1250,6 +1294,14 @@ int main(int argc, char *argv[]) {
     fflush(stdout); 
     inprompt(prompt); // read prompt
     #else
+    #ifdef MMDEBUG
+    FILE* dLogFile = freopen("debug_matmul.log", "w", stderr);
+    if (dLogFile == NULL) {
+        // Handle error
+        perror("freopen");
+        return 1;
+    }
+    #endif
 // END L2E Addition
     // poor man's C argparse so we can override the defaults above from the command line
     if (argc >= 2) { checkpoint_path = argv[1]; } else { error_usage(); }
@@ -1316,6 +1368,9 @@ int main(int argc, char *argv[]) {
     } // end of loop
     #endif
     #endif    
+    #ifdef MMDEBUG
+    fclose(dLogFile);
+    #endif
 // END L2E Addition
     return 0;
 }

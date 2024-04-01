@@ -4,6 +4,10 @@ BLIS_PREFIX = /usr/local
 BLIS_INC    = $(BLIS_PREFIX)/include/blis
 BLIS_LIB    = $(BLIS_PREFIX)/lib/libblis.a
 
+# MKL
+MKL_PREFIX = /opt/intel
+MKL_INC    = $(MKL_PREFIX)/mkl/include
+MKL_LIB    = $(MKL_PREFIX)/mkl/lib/intel64
 
 #OpenBLAS
 OPENBLAS_PREFIX = /usr/include
@@ -12,10 +16,6 @@ OPENBLAS_INC = $(OPENBLAS_PREFIX)/openblas
 # Model / Tokenizer Paths
 MOD_PATH    = out/model.bin
 TOK_PATH    = tokenizer.bin
-
-#  -L${MKLROOT}/lib/intel64 -lmkl_rt -Wl,--no-as-needed -lpthread -lm -ldl
-#  -m64  -I"${MKLROOT}/include" 
-
 
 # choose your compiler, e.g. gcc/clang
 # example override to clang: make run CC=clang
@@ -63,6 +63,10 @@ run_cc_gnu: ##		- Optimized Generic linux distro build
 .PHONY: runq_cc_gnu
 runq_cc_gnu: ##		- Same for quantized build
 	$(CC) -Ofast -march=native -mtune=native -std=gnu11 -o run runq.c -lm
+
+.PHONY: run_cc_mmdebug
+run_cc_mmdebug: ##		- ***NEW*** Matmul Debug Log build (Warning: Huge Logs)
+	$(CC) -D MMDEBUG -Ofast -march=native -mtune=native run.c -lm  -o run
 
 ##@ Accelerated Builds
 # additionally compiles with OpenMP, allowing multithreaded runs
@@ -133,12 +137,12 @@ runq_cc_blis: ##		- Same for quantized build
 ##@ ---> x86_64
 # amd64 (x86_64) / Intel Mac (WIP) Do not use!
 .PHONY: run_cc_mkl 
-run_cc_mkl: ##		- OpenMP + Intel MKL CBLAS build (x86_64 / intel Mac) (WIP)
-	$(CC) -D MKL -D OPENMP -Ofast -fopenmp -march=native -mtune=native run.c -lm -lblis -o run	
+run_cc_mkl: ##		- ***NEW*** OpenMP + Intel MKL CBLAS build (x86_64 / intel Mac)
+	$(CC) -D MKL -D OPENMP -Ofast -fopenmp -march=native -mtune=native -I$(MKL_INC) -L$(MKL_LIB) run.c -lmkl_rt -lpthread -lm -o run	
 
 .PHONY: runq_cc_mkl 
 runq_cc_mkl: ##		- Same for quantized build
-	$(CC) -D MKL -D OPENMP -Ofast -fopenmp -march=native -mtune=native runq.c -lm -lblis -o run
+	$(CC) -D MKL -D OPENMP -Ofast -fopenmp -march=native -mtune=native -I$(MKL_INC) -L$(MKL_LIB) runq.c -lmkl_rt -lpthread -lm -o run	
 
 ##@ ---> ARM64 / aarch64
 .PHONY: run_cc_armpl
