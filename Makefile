@@ -32,11 +32,11 @@ runq: runq_cc
 
 .PHONY: run_cc
 run_cc: ##		- Standard build with basic optimizations
-	$(CC) -O3 -o run run.c -lm
+	$(CC) -O3 -march=native -mtune=native -o run run.c -lm
 
 .PHONY: runq_cc
 runq_cc: ##		- Same for quantized build
-	$(CC) -O3 -o run runq.c -lm
+	$(CC) -O3 -march=native -mtune=native -o run runq.c -lm
 
 # https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 # https://simonbyrne.github.io/notes/fastmath/
@@ -49,118 +49,123 @@ runq_cc: ##		- Same for quantized build
 # In our specific application this is *probably* okay to use
 .PHONY: run_cc_fast
 run_cc_fast: ##		- More Optimized build. Disregards strict standards compliance
-	$(CC) -Ofast -o run run.c -lm
+	$(CC) -Ofast -march=native -mtune=native -o run run.c -lm
 
 .PHONY: runq_cc_fast
 runq_cc_fast: ##		- Same for quantized build
-	$(CC) -Ofast -o run runq.c -lm
+	$(CC) -Ofast -march=native -mtune=native -o run runq.c -lm
 
 # compiles with gnu99 standard flags for amazon linux, coreos, etc. compatibility
 .PHONY: run_cc_gnu
 run_cc_gnu: ##		- Optimized Generic linux distro build
-	$(CC) -Ofast -std=gnu11 -o run run.c -lm
+	$(CC) -Ofast -march=native -mtune=native -std=gnu11 -o run run.c -lm
 
 .PHONY: runq_cc_gnu
 runq_cc_gnu: ##		- Same for quantized build
-	$(CC) -Ofast -std=gnu11 -o run runq.c -lm
+	$(CC) -Ofast -march=native -mtune=native -std=gnu11 -o run runq.c -lm
 
 ##@ Accelerated Builds
 # additionally compiles with OpenMP, allowing multithreaded runs
 # make sure to also enable multiple threads when running, e.g.:
 # OMP_NUM_THREADS=4 ./run out/model.bin
+
+.PHONY: run_cc_avx
+run_cc_avx: ##		- ***NEW*** AVX accelerated build
+	$(CC) -D OPENMP -D ACCELAVX -Ofast -fopenmp -mavx -march=native -mtune=native run.c -lm  -o run
+
 .PHONY: run_cc_openmp
 run_cc_openmp: ##		- OpenMP accelerated build
-	$(CC) -D OPENMP -Ofast -fopenmp -march=native run.c  -lm  -o run
+	$(CC) -D OPENMP -Ofast -fopenmp -march=native -mtune=native run.c  -lm  -o run
 
 .PHONY: runq_cc_openmp
 runq_cc_openmp: ##		- Same for quantized build
-	$(CC) -D OPENMP -Ofast -fopenmp -march=native runq.c  -lm  -o run
+	$(CC) -D OPENMP -Ofast -fopenmp -march=native -mtune=native runq.c  -lm  -o run
 
 .PHONY: run_cc_openacc
 run_cc_openacc: ##		- OpenACC accelerated build
-	$(CC) -D OPENACC -Ofast -fopenacc -march=native run.c  -lm  -o run	
+	$(CC) -D OPENACC -Ofast -fopenacc -march=native -mtune=native run.c  -lm  -o run	
 
 .PHONY: runq_cc_openacc
 runq_cc_openacc: ##		- Same for quantized build
-	$(CC) -D OPENACC -Ofast -fopenacc -march=native runq.c  -lm  -o run	
+	$(CC) -D OPENACC -Ofast -fopenacc -march=native -mtune=native runq.c  -lm  -o run	
 
 .PHONY: run_cc_omp_gnu
 run_cc_omp_gnu: ##		- Generic linux distro + OpenMP build
-	$(CC) -D OPENMP -Ofast -fopenmp -std=gnu11 run.c  -lm  -o run
+	$(CC) -D OPENMP -Ofast -fopenmp -march=native -mtune=native -std=gnu11 run.c  -lm  -o run
 
 .PHONY: runq_cc_omp_gnu
 runq_cc_omp_gnu: ##		- Same for quantized build
-	$(CC) -D OPENMP -Ofast -fopenmp -std=gnu11 runq.c  -lm  -o run
+	$(CC) -D OPENMP -Ofast -fopenmp -march=native -mtune=native -std=gnu11 runq.c  -lm  -o run
 
 .PHONY: run_cc_clblast
 run_cc_clblast: ##		- CLBlast OpenCL CBLAS GPU accelerated build
-	$(CC) -D OPENMP -D CLBLAST -Ofast -fopenmp -march=native run.c -lm -lclblast -o run
+	$(CC) -D OPENMP -D CLBLAST -Ofast -fopenmp -march=native -mtune=native run.c -lm -lclblast -o run
 
 .PHONY: runq_cc_clblast
 runq_cc_clblast: ##		- Same for quantized build
-	$(CC) -D OPENMP -D CLBLAST -Ofast -fopenmp -march=native runq.c -lm -lclblast -o run
+	$(CC) -D OPENMP -D CLBLAST -Ofast -fopenmp -march=native -mtune=native runq.c -lm -lclblast -o run
 
 .PHONY: run_cc_openblas
 run_cc_openblas: ##		- Openblas CBLAS accelerated build
-	$(CC) -D OPENMP -D OPENBLAS -Ofast -fopenmp -march=native -I$(OPENBLAS_INC) run.c -lm -lopenblas -o run
+	$(CC) -D OPENMP -D OPENBLAS -Ofast -fopenmp -march=native -mtune=native -I$(OPENBLAS_INC) run.c -lm -lopenblas -o run
 
 .PHONY: runq_cc_openblas
 runq_cc_openblas: ##		- Same for quantized build
-	$(CC) -D OPENMP -D OPENBLAS -Ofast -fopenmp -march=native -I$(OPENBLAS_INC) runq.c -lm -lopenblas -o run
+	$(CC) -D OPENMP -D OPENBLAS -Ofast -fopenmp -march=native -mtune=native -I$(OPENBLAS_INC) runq.c -lm -lopenblas -o run
 
 .PHONY: run_cc_cblas
 run_cc_cblas: ##		- Generic CBLAS accelerated build
-	$(CC) -D CBLAS -Ofast -fopenmp -march=native run.c -lm -lcblas -o run
+	$(CC) -D CBLAS -Ofast -fopenmp -march=native -mtune=native run.c -lm -lcblas -o run
 
 .PHONY: runq_cc_cblas
 runq_cc_cblas: ##		- Same for quantized build
-	$(CC) -D CBLAS -Ofast -fopenmp -march=native runq.c -lm -lcblas -o run
+	$(CC) -D CBLAS -Ofast -fopenmp -march=native -mtune=native runq.c -lm -lcblas -o run
 
 .PHONY: run_cc_blis
 run_cc_blis: ##		- BLIS accelerated build
-	$(CC) -D BLIS -Ofast -fopenmp -march=native -I$(BLIS_INC) run.c -lm -lblis -o run
+	$(CC) -D BLIS -Ofast -fopenmp -march=native -mtune=native -I$(BLIS_INC) run.c -lm -lblis -o run
 	
 .PHONY: runq_cc_blis
 runq_cc_blis: ##		- Same for quantized build
-	$(CC) -D BLIS -Ofast -fopenmp -march=native -I$(BLIS_INC) runq.c -lm -lblis -o run
+	$(CC) -D BLIS -Ofast -fopenmp -march=native -mtune=native -I$(BLIS_INC) runq.c -lm -lblis -o run
 
 ##@ Special Builds 
 ##@ ---> x86_64
 # amd64 (x86_64) / Intel Mac (WIP) Do not use!
 .PHONY: run_cc_mkl 
 run_cc_mkl: ##		- OpenMP + Intel MKL CBLAS build (x86_64 / intel Mac) (WIP)
-	$(CC) -D MKL -D OPENMP -Ofast -fopenmp -march=native run.c -lm -lblis -o run	
+	$(CC) -D MKL -D OPENMP -Ofast -fopenmp -march=native -mtune=native run.c -lm -lblis -o run	
 
 .PHONY: runq_cc_mkl 
 runq_cc_mkl: ##		- Same for quantized build
-	$(CC) -D MKL -D OPENMP -Ofast -fopenmp -march=native runq.c -lm -lblis -o run
+	$(CC) -D MKL -D OPENMP -Ofast -fopenmp -march=native -mtune=native runq.c -lm -lblis -o run
 
 ##@ ---> ARM64 / aarch64
 .PHONY: run_cc_armpl
 run_cc_armpl: ##		- ARM PL BLAS accelerated build (ARM64 & Mac)  (WIP)
-	$(CC) -D ARMPL -D OPENMP -Ofast -fopenmp -march=native run.c -lm -larmpl_lp64_mp -o run
+	$(CC) -D ARMPL -D OPENMP -Ofast -fopenmp -march=native -mtune=native run.c -lm -larmpl_lp64_mp -o run
 
 .PHONY: runq_cc_armpl
 runq_cc_armpl: ##		- Same for quantized build
-	$(CC) -D ARMPL -D OPENMP -Ofast -fopenmp -march=native runq.c -lm -larmpl_lp64_mp -o run
+	$(CC) -D ARMPL -D OPENMP -Ofast -fopenmp -march=native -mtune=native runq.c -lm -larmpl_lp64_mp -o run
 
 ##@ ---> Macintosh
 .PHONY: run_cc_mac_accel
 run_cc_mac_accel: ##		- Mac OS OPENMP + CBLAS via Accelerate Framework build (WIP/TEST)
-	$(CC) -D AAF -D OPENMP -Ofast -fopenmp -march=native run.c -lm -framework Accelerate -o run
+	$(CC) -D AAF -D OPENMP -Ofast -fopenmp -march=native -mtune=native run.c -lm -framework Accelerate -o run
 
 .PHONY: runq_cc_mac_accel
 runq_cc_mac_accel: ##		- Same for quantized build
-	$(CC) -D AAF -D OPENMP -Ofast -fopenmp -march=native runq.c -lm -framework Accelerate -o run
+	$(CC) -D AAF -D OPENMP -Ofast -fopenmp -march=native -mtune=native runq.c -lm -framework Accelerate -o run
 
 ##@ ---> Windows
 .PHONY: run_win64
 run_win: ##		- Optimized Windows build with MinGW-w64 toolchain
-	x86_64-w64-mingw32-gcc -Ofast -D_WIN32 -o run.exe -I. run.c win.c
+	x86_64-w64-mingw32-gcc -Ofast -march=native -mtune=native -D_WIN32 -o run.exe -I. run.c win.c
 
 .PHONY: runq_win64
 runq_win: ##		- Same for quantized build
-	x86_64-w64-mingw32-gcc -Ofast -D_WIN32 -o run.exe -I. runq.c win.c
+	x86_64-w64-mingw32-gcc -Ofast -march=native -mtune=native -D_WIN32 -o run.exe -I. runq.c win.c
 
 .PHONY: run_win_msvc
 run_win_msvc: ##		- OpenMP accelerated Windows build with MSVC toolchain (Untested)
@@ -220,105 +225,105 @@ runq_cosmocc_strlit: ##		- Same for quantized build
 # GCC OpenMP + embedded model & tokenizer	
 .PHONY: run_gcc_openmp_incbin
 run_gcc_openmp_incbin: ##	- Gcc + OpenMP + embedded model fast build
-	gcc -D OPENMP -Ofast -fopenmp -foffload-options="-Ofast -lm" -march=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP run.c  -lm  -o run	
+	gcc -D OPENMP -Ofast -fopenmp -foffload-options="-Ofast -lm" -march=native -mtune=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP run.c  -lm  -o run	
 
 .PHONY: runq_gcc_openmp_incbin
 runq_gcc_openmp_incbin: ##	- Same for quantized build
-	gcc -D OPENMP -Ofast -fopenmp -foffload-options="-Ofast -lm" -march=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP runq.c  -lm  -o run	
+	gcc -D OPENMP -Ofast -fopenmp -foffload-options="-Ofast -lm" -march=native -mtune=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP runq.c  -lm  -o run	
 
 .PHONY: run_gcc_openmp_strlit
 run_gcc_openmp_strlit: ##	- Gcc + OpenMP + embedded model build
 	gcc -Ofast strliteral.c -o strlit
 	./strlit -i emb_Model_data $(MOD_PATH) model.h
 	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
-	gcc -D OPENMP -Ofast -fopenmp -foffload-options="-Ofast -lm" -march=native -D STRLIT -D LLOOP run.c  -lm  -o run	
+	gcc -D OPENMP -Ofast -fopenmp -foffload-options="-Ofast -lm" -march=native -mtune=native -D STRLIT -D LLOOP run.c  -lm  -o run	
 
 .PHONY: runq_gcc_openmp_strlit
 runq_gcc_openmp_strlit: ##	- Same for quantized build
 	gcc -Ofast strliteral.c -o strlit
 	./strlit -i emb_Model_data $(MOD_PATH) model.h
 	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
-	gcc -D OPENMP -Ofast -fopenmp -foffload-options="-Ofast -lm" -march=native -D STRLIT -D LLOOP runq.c  -lm  -o run	
+	gcc -D OPENMP -Ofast -fopenmp -foffload-options="-Ofast -lm" -march=native -mtune=native -D STRLIT -D LLOOP runq.c  -lm  -o run	
 
 # Clang OpenMP + embedded model & tokenizer	
 .PHONY: run_clang_openmp_incbin
 run_clang_openmp_incbin: ##	- Clang + OpenMP + embedded model fast build
-	clang -D OPENMP -Ofast -fopenmp -march=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP run.c  -lm  -o run	
+	clang -D OPENMP -Ofast -fopenmp -march=native -mtune=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP run.c  -lm  -o run	
 
 .PHONY: runq_clang_openmp_incbin
 runq_clang_openmp_incbin: ##	- Same for quantized build
-	clang -D OPENMP -Ofast -fopenmp -march=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP runq.c  -lm  -o run	
+	clang -D OPENMP -Ofast -fopenmp -march=native -mtune=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP runq.c  -lm  -o run	
 
 .PHONY: run_clang_openmp_strlit
 run_clang_openmp_strlit: ##	- Clang + OpenMP + embedded model build
 	clang -Ofast strliteral.c -o strlit
 	./strlit -i emb_Model_data $(MOD_PATH) model.h
 	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
-	clang -D OPENMP -Ofast -fopenmp -march=native -D STRLIT -D LLOOP run.c  -lm  -o run		
+	clang -D OPENMP -Ofast -fopenmp -march=native -mtune=native -D STRLIT -D LLOOP run.c  -lm  -o run		
 
 .PHONY: runq_clang_openmp_strlit
 runq_clang_openmp_strlit: ##	- Same for quantized build
 	clang -Ofast strliteral.c -o strlit
 	./strlit -i emb_Model_data $(MOD_PATH) model.h
 	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
-	clang -D OPENMP -Ofast -fopenmp -march=native -D STRLIT -D LLOOP runq.c  -lm  -o run	
+	clang -D OPENMP -Ofast -fopenmp -march=native -mtune=native -D STRLIT -D LLOOP runq.c  -lm  -o run	
 
 ##@ ---> GCC/Clang Embedded Model Builds ---> Statically Linked
 # GCC static + embedded model & tokenizer
 .PHONY: run_gcc_static_incbin
 run_gcc_static_incbin: ##	- Optimized Static gcc + embedded model fast build
-	gcc -Ofast -static -march=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP run.c  -lm  -o run	
+	gcc -Ofast -static -march=native -mtune=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP run.c  -lm  -o run	
 
 .PHONY: runq_gcc_static_incbin
 runq_gcc_static_incbin: ##	- Same for quantized build
-	gcc -Ofast -static -march=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP runq.c  -lm  -o run	
+	gcc -Ofast -static -march=native -mtune=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP runq.c  -lm  -o run	
 
 .PHONY: run_gcc_static_strlit
 run_gcc_static_strlit: ##	- Optimized Static gcc + embedded model build
 	gcc -Ofast strliteral.c -o strlit
 	./strlit -i emb_Model_data $(MOD_PATH) model.h
 	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
-	gcc -Ofast -static -march=native -D STRLIT -D LLOOP run.c  -lm  -o run
+	gcc -Ofast -static -march=native -mtune=native -D STRLIT -D LLOOP run.c  -lm  -o run
 
 .PHONY: runq_gcc_static_strlit
 runq_gcc_static_strlit: ##	- Same for quantized build
 	gcc -Ofast strliteral.c -o strlit
 	./strlit -i emb_Model_data $(MOD_PATH) model.h
 	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
-	gcc -Ofast -static -march=native -D STRLIT -D LLOOP runq.c  -lm  -o run
+	gcc -Ofast -static -march=native -mtune=native -D STRLIT -D LLOOP runq.c  -lm  -o run
 
 # Clang static + embedded model & tokenizer
 .PHONY: run_clang_static_incbin
 run_clang_static_incbin: ##	- Optimized Static clang + embedded model fast build
-	clang -Ofast -static -march=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP run.c  -lm  -o run	
+	clang -Ofast -static -march=native -mtune=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP run.c  -lm  -o run	
 
 .PHONY: runq_clang_static_incbin
 runq_clang_static_incbin: ##	- Same for quantized build
-	clang -Ofast -static -march=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP runq.c  -lm  -o run	
+	clang -Ofast -static -march=native -mtune=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -D LLOOP runq.c  -lm  -o run	
 
 .PHONY: run_clang_static_strlit
 run_clang_static_strlit: ##	- Optimized Static clang + embedded model build
 	clang -Ofast strliteral.c -o strlit
 	./strlit -i emb_Model_data $(MOD_PATH) model.h
 	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
-	clang -Ofast -static -march=native -D STRLIT -D LLOOP run.c  -lm  -o run
+	clang -Ofast -static -march=native -mtune=native -D STRLIT -D LLOOP run.c  -lm  -o run
 
 .PHONY: runq_clang_static_strlit
 runq_clang_static_strlit: ##	- Same for quantized build
 	clang -Ofast strliteral.c -o strlit
 	./strlit -i emb_Model_data $(MOD_PATH) model.h
 	./strlit -i emb_Tokenizer_data $(TOK_PATH) tokenizer.h
-	clang -Ofast -static -march=native -D STRLIT -D LLOOP runq.c  -lm  -o run
+	clang -Ofast -static -march=native -mtune=native -D STRLIT -D LLOOP runq.c  -lm  -o run
 
 # Build for termux on Android
 ##@ ---> Android
 .PHONY: run_incbin_tmux
 run_incbin_tmux: get_model ##		- Optimized build + Embedded Model for Termux on Android
-	$(CC) -Ofast -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -o run run.c -lm
+	$(CC) -Ofast -march=native -mtune=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -o run run.c -lm
 
 .PHONY: runq_incbin_tmux
 runq_incbin_tmux: get_model ##		- Same for quantized build
-	$(CC) -Ofast -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -o run runq.c -lm
+	$(CC) -Ofast -march=native -mtune=native -D INC_BIN -D MODPATH=$(MOD_PATH) -D TOKPATH=$(TOK_PATH) -o run runq.c -lm
 
 ##@ ---> L2E Unikernel (Asteroid)	
 # Unikraft Unikernel build

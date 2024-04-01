@@ -115,6 +115,13 @@ __static_yoink("zipos");
 #endif
 
 // ----------------------------------------------------------------------------
+// AVX Support
+
+#ifdef ACCELAVX
+#include <immintrin.h>
+#endif
+
+// ----------------------------------------------------------------------------
 // OpenMP and OpenACC Support
 
 // Macro that makes a pragma enabled with string substitution
@@ -378,6 +385,65 @@ void softmax(float* x, int size) {
     }
 }
 
+// L2E Addition
+#ifdef ACCELAVX
+// 4x loop unrolled avx matmul
+void avx_matmul(float* xout, const float* x, const float* w, int n, int d) {
+    int nn = n / 8 * 8;  // ensure n is a multiple of 8
+    int i;
+    __m256 sum_vec;
+    #ifdef ACCEL
+    #pragma omp parallel for private(i, sum_vec)
+    #endif
+    for (i = 0; i < d; i++) {
+        sum_vec = _mm256_setzero_ps(); // for AVX2, sum of 8 floats
+        int i_n = i * n;
+        #ifdef ACCEL
+        #pragma omp simd
+        #endif
+        for (int j = 0; j < nn; j += 32) {
+            // Load 32 values from w and x
+            __m256 w_vec0 = _mm256_loadu_ps(&w[i_n + j]);
+            __m256 w_vec1 = _mm256_loadu_ps(&w[i_n + j + 8]);
+            __m256 w_vec2 = _mm256_loadu_ps(&w[i_n + j + 16]);
+            __m256 w_vec3 = _mm256_loadu_ps(&w[i_n + j + 24]);
+            __m256 x_vec0 = _mm256_loadu_ps(&x[j]);
+            __m256 x_vec1 = _mm256_loadu_ps(&x[j + 8]);
+            __m256 x_vec2 = _mm256_loadu_ps(&x[j + 16]);
+            __m256 x_vec3 = _mm256_loadu_ps(&x[j + 24]);
+
+            // Multiply and accumulate
+            __m256 prod_vec0 = _mm256_mul_ps(w_vec0, x_vec0);
+            __m256 prod_vec1 = _mm256_mul_ps(w_vec1, x_vec1);
+            __m256 prod_vec2 = _mm256_mul_ps(w_vec2, x_vec2);
+            __m256 prod_vec3 = _mm256_mul_ps(w_vec3, x_vec3);
+            sum_vec = _mm256_add_ps(sum_vec, prod_vec0);
+            sum_vec = _mm256_add_ps(sum_vec, prod_vec1);
+            sum_vec = _mm256_add_ps(sum_vec, prod_vec2);
+            sum_vec = _mm256_add_ps(sum_vec, prod_vec3);
+        }
+
+        // Perform horizontal add
+        sum_vec = _mm256_hadd_ps(sum_vec, sum_vec);
+        sum_vec = _mm256_hadd_ps(sum_vec, sum_vec);
+        float vals[8];
+        _mm256_storeu_ps(vals, sum_vec);
+        float val = vals[0] + vals[4];
+
+        // handle remainder if n is not a multiple of 8
+        int j;
+        #ifdef ACCEL
+        #pragma omp simd reduction(+:val)
+        #endif
+        for (j = nn; j < n; j++) {
+            val += w[i_n + j] * x[j];
+        }
+        xout[i] = val;
+    }
+}
+#endif
+// END L2E Addition 
+
 void matmul(float* xout, float* x, float* w, int n, int d) {
     // W (d,n) @ x (n,) -> xout (d,)
     // by far the most amount of time is spent inside this little function
@@ -385,6 +451,8 @@ void matmul(float* xout, float* x, float* w, int n, int d) {
 // L2E Addition
     #ifdef BLAS
     cblas_sgemv(CblasRowMajor, CblasNoTrans, d, n, 1.0f, w, n, x, 1, 0.0f, xout, 1);
+    #elif defined(ACCELAVX)
+    avx_matmul(xout, x, w, n, d);
     #else
     #ifdef ACCEL
     ACCEL(i) // OMP/OACC Macro
