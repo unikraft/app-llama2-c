@@ -64,10 +64,6 @@ run_cc_gnu: ##		- Optimized Generic linux distro build
 runq_cc_gnu: ##		- Same for quantized build
 	$(CC) -Ofast -march=native -mtune=native -std=gnu11 -o run runq.c -lm
 
-.PHONY: run_cc_mmdebug
-run_cc_mmdebug: ##		- ***NEW*** Matmul Debug Log build (Warning: Huge Logs)
-	$(CC) -D MMDEBUG -Ofast -march=native -mtune=native run.c -lm  -o run
-
 ##@ Accelerated Builds
 # additionally compiles with OpenMP, allowing multithreaded runs
 # make sure to also enable multiple threads when running, e.g.:
@@ -526,6 +522,27 @@ boot_l2e_iso_uefi: ##		- Boot L2E OS ISO Image with UEFI in qemu
 .PHONY: run_debug
 run_debug: ##		- Debug build which can be analyzed with tools like valgrind.
 	$(CC) -g -o run run.c -lm
+
+.PHONY: run_cc_bcdebug
+run_cc_bcdebug: ##		- ***NEW*** C to LLVM bitcode & LLVM bitcode to C transpiled debug build
+	echo "Requires clang-17, and llvm-cbe to be compiled and added to path."
+	echo "Get llvm-cbe here: https://github.com/JuliaHubOSS/llvm-cbe"
+	clang-17 -march=native -mtune=native  -S -emit-llvm -g run.c  
+	llvm-cbe run.ll 
+	$(CC) -Ofast -march=native -mtune=native -o run run.cbe.c -lm
+
+.PHONY: runq_cc_bcdebug
+runq_cc_bcdebug: ##		- Same for quantized build
+	echo "Requires clang-17, and llvm-cbe to be compiled and added to path."
+	echo "Get llvm-cbe here: https://github.com/JuliaHubOSS/llvm-cbe"
+	clang-17 -march=native -mtune=native  -S -emit-llvm -g runq.c  
+	llvm-cbe runq.ll 
+	$(CC) -Ofast -march=native -mtune=native -o run runq.cbe.c -lm
+
+.PHONY: run_cc_mmdebug
+run_cc_mmdebug: ##		- ***NEW*** Matmul Debug Log build (Warning: Huge Logs)
+	$(CC) -D MMDEBUG -Ofast -march=native -mtune=native run.c -lm  -o run
+
 
 ##@ Testing
 .PHONY: test

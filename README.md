@@ -457,6 +457,7 @@ Simple Builds
   runq_cc_gnu                   - Same for quantized build
 
 Accelerated Builds
+  run_cc_avx                    - ***NEW*** AVX accelerated build
   run_cc_openmp                 - OpenMP accelerated build
   runq_cc_openmp                - Same for quantized build
   run_cc_openacc                - OpenACC accelerated build
@@ -475,7 +476,7 @@ Accelerated Builds
 Special Builds 
 
 ---> x86_64
-  run_cc_mkl                    - OpenMP + Intel MKL CBLAS build (x86_64 / intel Mac) (WIP)
+  run_cc_mkl                    - ***NEW*** OpenMP + Intel MKL CBLAS build (x86_64 / intel Mac)
   runq_cc_mkl                   - Same for quantized build
 
 ---> ARM64 / aarch64
@@ -554,6 +555,9 @@ Special Builds
 
 Debug Build
   run_debug                     - Debug build which can be analyzed with tools like valgrind.
+  run_cc_bcdebug                - ***NEW*** C to LLVM bitcode & LLVM bitcode to C transpiled debug build
+  runq_cc_bcdebug               - Same for quantized build
+  run_cc_mmdebug                - ***NEW*** Matmul Debug Log build (Warning: Huge Logs)
 
 Testing
   test                          - run all tests (inclusive python code, needs python)
