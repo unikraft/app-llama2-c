@@ -455,6 +455,7 @@ Simple Builds
   runq_cc_fast                  - Same for quantized build
   run_cc_gnu                    - Optimized Generic linux distro build
   runq_cc_gnu                   - Same for quantized build
+  run_cc_mmdebug                - ***NEW*** Matmul Debug Log build (Warning: Huge Logs)
 
 Accelerated Builds
   run_cc_avx                    - ***NEW*** AVX accelerated build
