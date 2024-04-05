@@ -529,6 +529,14 @@ Special Builds
   run_incbin_tmux               - Optimized build + Embedded Model for Termux on Android
   runq_incbin_tmux              - Same for quantized build
 
+Post Compile Optimizations
+
+Binary Optimization 
+  run_bolt                      - ***NEW*** Apply llvm bolt binary optimization
+
+Strip Symbols 
+  run_strip                     - ***NEW*** Strip symbols to make binaries smaller
+
 ---> L2E Unikernel (Asteroid)
   l2e_unik_qemu                 - L2E Unikernel (Asteroid) for kvm / qemu x86_64
 

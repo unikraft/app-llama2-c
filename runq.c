@@ -1322,6 +1322,7 @@ int main(int argc, char *argv[]) {
     printf("\n" DEFTOSTR(OSPROMPT)" ");
     fflush(stdout); 
     inprompt(prompt); // read prompt
+    if (!strcmp(prompt, "exit")) { exit(0);} // Exit when prompt contains exit
     #else
 // END L2E Addition
     // poor man's C argparse so we can override the defaults above from the command line

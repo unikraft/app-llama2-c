@@ -1293,6 +1293,7 @@ int main(int argc, char *argv[]) {
     printf("\n" DEFTOSTR(OSPROMPT)" ");
     fflush(stdout); 
     inprompt(prompt); // read prompt
+    if (!strcmp(prompt, "exit")) { exit(0);} // Exit when prompt contains exit
     #else
     #ifdef MMDEBUG
     FILE* dLogFile = freopen("debug_matmul.log", "w", stderr);
