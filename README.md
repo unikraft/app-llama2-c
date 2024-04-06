@@ -36,17 +36,7 @@ It's a chicken and egg problem. This has to be explored and figured out on the w
 
 # Features
 
-### News: Llama 2 Everywhere (L2E) Unikraft unikernel & cloud
-
-The cool folks at [Unikraft](https://unikraft.org/) / [Kraft Cloud](https://kraft.cloud/) have a offical unikraft fork of L2E unikraft unikernel here: [app-llama2-c](https://github.com/unikraft/app-llama2-c) be sure to try it out and support them by purchasing cloud accounts. They are super cool and they have contributed some unikraft way fixes to L2E and guess what? A web API! (I have to merge it asap). Thank you @razvand & [@felipehuici](https://twitter.com/felipehuici) for making this possible.
-
-Why you should use unikraft? Lightening fast (ms) boot up of your applications in cloud vms, added security and isolation, lower cost ie high density - allows you to run way more processes on a single server, added performance - less overhead OS code so your code get the 99.99% of resources!
-
-We love unikraft so much that the future versions the L2E OS (linux) will have KVM and selfhosting support and demo instances of L2E unikraft unikernels so that you can test drive unikraft unikernels on your own machine!
-
-I highly recommend you to have a unikraft cloud account and purchase a basic plan, either just for the heck of it or to support their great endeavour. Unikraft unikernels is something which I wanted 10 years ago. Imagine how much energy and hardware it could have saved! The web needs to be more efficient.
-
-#### NEW - L2E OS (Linux Kernel)
+#### L2E OS (Linux Kernel)
 
 Have you ever wanted to really boot and inference a baby Llama 2 model on a computer? No? Well, now you can!
 
@@ -60,11 +50,17 @@ Have you ever wanted to do `cat /dev/llama` and `echo "Sudo make me a sandwich!"
 
 Download and run the ISO from the latest release!
 
-### NEW - Unikernel Build
+### Unikraft Unikernel Build
 
 Have you ever wanted to boot and inference a herd of 1000's of Virtual baby Llama 2 models on big ass enterprise servers? No? Well, now you can!
 
 ![l2e_unik](https://github.com/trholding/llama2.c/assets/93451215/415f00b4-25ed-4c30-b619-1c3404ababee)
+
+
+The cool folks at [Unikraft](https://unikraft.org/) / [Kraft Cloud](https://kraft.cloud/) have a offical unikraft fork of L2E unikraft unikernel here: [app-llama2-c](https://github.com/unikraft/app-llama2-c) be sure to try it out and support them by purchasing cloud accounts. Thank you @razvand & [@felipehuici](https://twitter.com/felipehuici) for making this possible.
+
+
+We love unikraft so much that the future versions the L2E OS (linux) will have KVM and selfhosting support and demo instances of L2E unikraft unikernels so that you can test drive unikraft unikernels on your own machine!
 
 Just do the following to build:
 
@@ -118,7 +114,7 @@ Read more:
 - [x] OpenBLAS
 - [x] CBLAS
 - [x] BLIS
-- [ ] Intel MKL (WIP)
+- [x] Intel MKL 
 - [ ] ArmPL (WIP)
 - [ ] Apple Accelerate Framework (CBLAS) (WIP/Testing)
 
@@ -134,7 +130,6 @@ Both OpenMP and OpenACC builds currently use host CPU and do not offload to GPU.
 - [x] OpenCL (via CLBlast) (Direct - planned)
 - [ ] OpenGL 
 - [ ] Vulkan 
-- [ ] CUDA 
 
 Download the prebuilt run.com binary from releases
 
@@ -153,7 +148,7 @@ The original repository offers a full-stack solution for training and inferring 
 ```bash
 git clone https://github.com/trholding/llama2.c.git
 cd llama2.c
-make runfast
+make run_cc_fast
 wget https://huggingface.co/karpathy/tinyllamas/resolve/main/stories15M.bin
 ./run stories15M.bin
 ```
@@ -195,16 +190,19 @@ A converted **Meta's Llama 2 7b** model can be inferenced at a slow speed.
 
 ```
 Usage:   run <checkpoint> [options]
-Example: ./run model.bin -n 256 -i "Once upon a time"
+Example: run model.bin -n 256 -i "Once upon a time"
 Options:
   -t <float>  temperature in [0,inf], default 1.0
   -p <float>  p value in top-p (nucleus) sampling in [0,1] default 0.9
   -s <int>    random seed, default time(NULL)
   -n <int>    number of steps to run for, default 256. 0 = max_seq_len
-  -b <int>    number of tokens to buffer, default 1. 0 = max_seq_len
-  -x <int>    extended info / stats, default 1 = on. 0 = off
   -i <string> input prompt
   -z <string> optional path to custom tokenizer
+  -m <string> mode: generate|chat, default: generate
+  -y <string> (optional) system prompt in chat mode
+  -b <int>    number of tokens to buffer, default 1. 0 = max_seq_len
+  -x <int>    extended info / stats, default 1 = on. 0 = off
+
 ```
 ``<checkpoint>`` is the **mandatory** checkpoint / model file.
 
@@ -597,31 +595,10 @@ wget https://huggingface.co/karpathy/tinyllamas/resolve/main/stories15M.bin -O o
 
 ## TODO
 
-- [ ] Python Binding + Streamlit Demo (priority)
-- [ ] Web UI + Minimal OpenAI API compat (priority)
-- [ ] GNU/Linux kernel + efistub + cpio + l2e as init boot image (priority)
-- [ ] Users need better docs / howto / example, especially VM related.
-- [ ] Train a small test model on open books. (I need to figure out sourcing the compute)
-- [x] Unikraft unikernel Boot (WIP/Testing) (Task: Multi Arch + Firecracker VM support)
-- [ ] Intel MKL BLAS Acceleration (WIP)
-- [ ] Arm Performance Libraries (WIP)
-- [ ] Apple Accelerate BLAS (WIP/Testing)
-- [ ] NetBSD Rump Kernel Boot (R&D, attempt failed, needs deep study)
-- [ ] sgemm OpenGL acceleration (next)
-- [ ] sgemm SSE, AVX acceleration
-- [ ] Fix baremetal cosmo boot model loading (pending)
-- [ ] OpenMP SIMD (pending)
-- [ ] OpenCL pure
-- [ ] Vulkan
-- [ ] CUDA
 - [ ] MPI / PVM / PBLAS
-- [ ] cFS App
-- [ ] Android support (both ndk builds and minimal APK)
-- [ ] Various uC demos (ESP32, ESP8266, Pico) - load models via network, Raspi Zero Demo
-- [ ] Quantization (16, 4 , 2)
-- [ ] ~~CLara~~ (tried / broken) / SunCL Distributed OpenCL support
-- [ ] Fix broken MSVC build (!) yikes
-- [ ] Split, re-order, rebase repo.
+- [ ] Clean up README.md
+- [ ] Add every project used to credits
+- [ ] Update License to mention all licenses involved
  
 ## Changelog
 
@@ -656,6 +633,7 @@ Thank you to to the creators of the following libraries and tools and their cont
 ## Notable projects
 - [llama.cpp](https://github.com/ggerganov/llama.cpp)
 - [llama2.c](https://github.com/karpathy/llama2.c)
+
 ## License
 
-MIT
+MIT, GNU GPL, BSD and other depending on build options
