@@ -1,6 +1,6 @@
 ## Llama 2 Everywhere (L2E)
 
-Note: Much gratitude for all the upvotes on HN, Twitter, Reddit and other places. I'll take time this week to polish this up a bit. For the OS, please download it from the releases. The current system requirements are 512MB RAM and a x86_64 (64bit) PC. It's not very usable yet. We are working to make it better. Feel free to sponsor us if you like the idea of a useful AI OS that runs on minimal hardware. You can find me on twitter/X here: [@VulcanIgnis](https://twitter.com/VulcanIgnis) Please note that this project is built on the shoulders of giants. Find the credits at the bottom.
+Note: Much gratitude for all the upvotes on HN, Twitter, Reddit and other places. For the OS, please download it from the releases. The current system requirements are 512MB RAM and a x86_64 (64bit) PC. The OS version is a toy demo and not very usable yet. We are working to make it better. Feel free to sponsor us if you like the idea of a useful AI OS that runs on minimal hardware. Please note that this project is built on the shoulders of giants. Find the credits at the bottom.
 
 <p align="center">
   <img src="assets/llamas_everywhere.jpg" width="600" height="454" alt="LLamas Everywhere!">
@@ -12,29 +12,30 @@ The primary objective of Llama 2 Everywhere (L2E) is to ensure its compatibility
 
 We believe that in future by harnessing a legion of small specialized LLMs with modest hardware requirements which are networked, distributed, and self-coordinated, L2E has the potential to democratize access to AI and unlock collective intelligence that surpasses that of a single large LLM.
 
-The current compelling use case of L2E involves training small models on diverse textual sources, including textbooks, open books, and comprehensive corpora like the SlimPajama corpus. These trained models can be deployed using L2E, enabling them to run as bootable instances on outdated school computers. This deployment scenario proves particularly valuable in school libraries or classrooms where internet connectivity is limited or unavailable, serving as an information gateway* for students without constant reliance on the internet.
+The current compelling use case of L2E involves training small models on diverse textual sources, including textbooks, open books, and comprehensive corpora like the SlimPajama corpus. These trained models can in future be deployed using L2E, enabling them to run as bootable instances on resource constrained computers. This deployment scenario proves particularly valuable in school libraries or classrooms where internet connectivity is limited or unavailable, serving as an information gateway* for students without constant reliance on the internet.
 
 By pursuing the vision of Llama 2 Everywhere, we aim to create an inclusive AI ecosystem that can adapt to diverse environments and empower individuals and communities on a global scale.
 
-My research goal is to train models using various hardware telemetry data with the hope that the models learn to interpret sensor inputs and control actuators based on the insights they glean from the sensor inputs. This research direction may open up exciting possibilities in fields such as automation, space, robotics and IoT, where L2E can play a pivotal role in bridging the gap between AI and physical systems.
+Apart from that, my research goal is to train models using various hardware telemetry data with the hope that the models learn to interpret sensor inputs and control actuators based on the insights they glean from the sensor inputs. This research direction may open up exciting possibilities in fields such as automation, space, robotics and IoT, where L2E can play a pivotal role in bridging the gap between AI and physical systems.
 
+Initially a friendly fork of the excellent [@karpathy's llama2.c](https://github.com/karpathy/llama2.c), by now highly diverged, considering that we can build a whole OS with this.
 
-A friendly fork of the excellent [@karpathy's llama2.c](https://github.com/karpathy/llama2.c)
+I will be merging the progress of https://github.com/karpathy/llama2.c once in a while, add portability, performance improvements and convenience features which certainly would not fit in the upstream do to the minimalistic elegance requirements there.
 
-I will be mirrorring the progress of https://github.com/karpathy/llama2.c every week, add portability, performance improvements and convenience features such as a web interface which certainly would not fit in the upstream do to the minimalistic elegance requirements there.
+Learn more about the Llama2 models & architecture at Meta: [Llama 2 @ Meta](https://llama.meta.com/llama2/)
 
-### * How do we make sure that the output is factual and not hallucinated?
+# What people say:
+* [Andrej Karpathy on X](https://twitter.com/karpathy/status/1710061549677613469)
 
-It's a chicken and egg problem. This has to be explored and figured out on the way. Some ideas on mind are:
+* [Once upon a time on Reddit](https://www.reddit.com/r/LocalLLaMA/comments/16zklam/i_created_an_os_that_boots_to_a_baby_llama2/?sort=top)
 
-1. Topic specialized models which are frequently updated maybe every month or two.
-2. Fact Checking & Moderation specialized models which moderate or do fact checking on other model's output.
-3. Reduce / mitigate hallucinations through output validation (both neural and rule based).
-4. Prompt rewriting both neural and with rules.
-5. Educators / Students / Users can flag answers. Administrators could update rules.
+* [Once upon a time on HN](https://news.ycombinator.com/item?id=37785442)
 
+# Features & Milestones
 
-# Features
+#### Llama 3 Support
+
+Work in Progress - Coming Soonish (TM)
 
 #### L2E OS (Linux Kernel)
 
