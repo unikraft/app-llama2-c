@@ -35,7 +35,7 @@ Learn more about the Llama2 models & architecture at Meta: [Llama 2 @ Meta](http
 
 #### Llama 3 Support
 
-Work in Progress - Coming Soonish (TM)
+Almost done - Coming Soonish (TM)...
 
 #### L2E OS (Linux Kernel)
 
